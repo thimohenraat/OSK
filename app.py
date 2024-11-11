@@ -26,30 +26,35 @@ def extract_text_from_pdf(pdf_path):
 
 def search_in_text(content, query, is_pdf):
     matches = []
-    lines = content.splitlines()
     query_lower = query.lower()
 
-    # Splits de tekst in zinnen met een eenvoudige regel voor punten en vraagtekens
-    sentences = re.split(r'(?<=[.!?])\s+', content) if not is_pdf else content
+    def process_sentences(sentences, page_num=None):
+        for sentence_num, sentence in enumerate(sentences):
+            sentence_lower = sentence.lower()
+            if query_lower in sentence_lower:
+                start_index = sentence_lower.index(query_lower)
+                end_index = start_index + len(query_lower)
+                context_start = max(0, start_index - 30)
+                context_end = min(len(sentence), end_index + 30)
+                match_fragment = sentence[context_start:context_end]
 
-
-    # Voor PDF, loop per pagina door; voor andere bestanden, doorloop elke zin
-    for page_num, page_content in enumerate(sentences if not is_pdf else content):
-        context_sentences = page_content if not is_pdf else page_content.splitlines()
-        
-        for sentence_num, sentence in enumerate(context_sentences):
-            # Check of het zoekwoord in de zin voorkomt (case-insensitive)
-            if query_lower in sentence.lower():
-                # Zoek naar de positie van het zoekwoord en geef een fragment rondom het woord
-                start_index = max(sentence.lower().find(query_lower) - 30, 0)
-                end_index = min(len(sentence), start_index + len(query) + 60)
-                match_fragment = sentence[start_index:end_index].strip()
-
-                # Voeg een match toe met pagina- of regelnummers voor PDF en DOCX
-                if is_pdf:
-                    matches.append(f"Pagina {page_num + 1}, regel {sentence_num + 1}: {match_fragment}")
+                if page_num is not None:
+                    matches.append(f"Pagina {page_num + 1}, regel {sentence_num + 1}: ...{match_fragment}...")
                 else:
-                    matches.append(f"Regel {sentence_num + 1}: {match_fragment}")
+                    matches.append(f"Regel {sentence_num + 1}: ...{match_fragment}...")
+
+    if is_pdf:
+        # Split PDF content into pages if it's a single string
+        if isinstance(content, str):
+            content = content.split('\f')  # Form feed character often separates PDF pages
+        
+        for page_num, page_content in enumerate(content):
+            sentences = re.split(r'(?<=[.!?])\s+', page_content)
+            process_sentences(sentences, page_num=page_num)
+    else:
+        # For DOCX and other files, treat entire content as one text block
+        sentences = re.split(r'(?<=[.!?])\s+', content)
+        process_sentences(sentences)
 
     return matches
 
