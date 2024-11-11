@@ -1,7 +1,6 @@
 document.getElementById("search-form").addEventListener("submit", function(e) {
     e.preventDefault();
     const query = e.target.query.value;
-    console.log(query)
 
     fetch("/search", {
         method: "POST",
@@ -13,12 +12,15 @@ document.getElementById("search-form").addEventListener("submit", function(e) {
     .then(response => response.json())
     .then(data => {
         const resultsDiv = document.getElementById("results");
+        
         resultsDiv.innerHTML = "";
         
         if (data.length === 0) {
             resultsDiv.innerHTML = "<p>No results found.</p>";
         } else {
             data.forEach(result => {
+                console.log(result);
+                
                 const resultItem = document.createElement("div");
                 resultItem.classList.add("result-item");
 

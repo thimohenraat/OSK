@@ -24,7 +24,7 @@ def extract_text_from_pdf(pdf_path):
             full_text.append(page.extract_text())
         return '\n'.join(full_text)
 
-def search_in_text(content, query, is_pdf=False):
+def search_in_text(content, query, is_pdf):
     matches = []
     lines = content.splitlines()
     query_lower = query.lower()
@@ -108,7 +108,7 @@ def search():
             else:
                 continue
             
-            matches = search_in_text(content, query_str, is_pdf=False)
+            matches = search_in_text(content, query_str, is_pdf)
             results_data.append({"path": filepath, "matches": matches})
     
     return jsonify(results_data)
