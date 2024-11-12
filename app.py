@@ -5,8 +5,11 @@ from whoosh.qparser import QueryParser
 import os
 from docx import Document
 import PyPDF2
+import fitz   
 import re
 import logging
+import subprocess
+import platform
 
 app = Flask(__name__, template_folder='templates', static_folder='static')
 logging.basicConfig(level=logging.INFO)
@@ -24,30 +27,39 @@ def extract_text_from_docx(docx_path):
 
 def extract_text_from_pdf(pdf_path):
     try:
-        with open(pdf_path, 'rb') as file:
-            reader = PyPDF2.PdfReader(file)
-            full_text = []
-            for page in reader.pages:
-                full_text.append(page.extract_text())
-            return '\n'.join(full_text)
+        with fitz.open(pdf_path) as doc:
+            return [(page.number + 1, page.get_text()) for page in doc]
     except Exception as e:
         logging.error(f"Error extracting text from PDF {pdf_path}: {e}")
-        return ""
+        return []
 
-def search_in_text(content, query):
+def search_in_text(content, query, is_pdf=False):
     matches = []
     query_lower = query.lower()
-    sentences = re.split(r'(?<=[.!?])\s+', content)
 
-    for sentence_num, sentence in enumerate(sentences, 1):
-        sentence_lower = sentence.lower()
-        if query_lower in sentence_lower:
-            start_index = sentence_lower.index(query_lower)
-            end_index = start_index + len(query_lower)
-            context_start = max(0, start_index - 30)
-            context_end = min(len(sentence), end_index + 30)
-            match_fragment = sentence[context_start:context_end]
-            matches.append(f"Regel {sentence_num}: ...{match_fragment}...")
+    def process_sentences(sentences, page_num=None):
+        for sentence_num, sentence in enumerate(sentences, 1):
+            sentence_lower = sentence.lower()
+            if query_lower in sentence_lower:
+                start_index = sentence_lower.index(query_lower)
+                end_index = start_index + len(query_lower)
+                context_start = max(0, start_index - 30)
+                context_end = min(len(sentence), end_index + 30)
+                match_fragment = sentence[context_start:context_end]
+                
+                if page_num:
+                    matches.append(f"Pagina {page_num}, Regel {sentence_num}: ...{match_fragment}...")
+                else:
+                    matches.append(f"Regel {sentence_num}: ...{match_fragment}...")
+
+    if is_pdf:
+        for page_num, page_content in content:
+            sentences = re.split(r'(?<=[.!?])\s+', page_content)
+            print(page_num)
+            process_sentences(sentences, page_num)
+    else:
+        sentences = re.split(r'(?<=[.!?])\s+', content)
+        process_sentences(sentences)
 
     return matches
 
@@ -67,13 +79,19 @@ def create_index(root_dir):
             if filename.endswith(".docx"):
                 content = extract_text_from_docx(filepath)
             elif filename.endswith(".pdf"):
-                content = extract_text_from_pdf(filepath)
+                # Voor PDF's, combineer alle pagina-inhoud tot één string
+                pdf_content = extract_text_from_pdf(filepath)
+                content = "\n".join([page_content for _, page_content in pdf_content])
             else:
                 continue
 
             if content:
-                writer.add_document(path=filepath, content=content)
-                logging.info(f"Indexed: {filepath}")
+                # Zorg ervoor dat content een string is
+                if isinstance(content, str):
+                    writer.add_document(path=filepath, content=content)
+                    logging.info(f"Indexed: {filepath}")
+                else:
+                    logging.warning(f"Skipped indexing {filepath}: content is not a string")
             else:
                 logging.warning(f"Failed to index: {filepath}")
 
@@ -87,6 +105,7 @@ def index():
 @app.route('/search', methods=['POST'])
 def search():
     query_str = request.form.get("query")
+
     if not query_str:
         return jsonify({"error": "No query provided"}), 400
 
@@ -94,26 +113,48 @@ def search():
     results_data = []
 
     with ix.searcher() as searcher:
-        query = QueryParser("content", ix.schema).parse(query_str)
+        parser = QueryParser("content", ix.schema)
+        query = parser.parse(query_str)
         results = searcher.search(query)
+        print(results)
 
         for result in results:
-            filepath = result['path']
-            content = result.get('content', '')
-            if not content:
-                if filepath.endswith(".docx"):
-                    content = extract_text_from_docx(filepath)
-                elif filepath.endswith(".pdf"):
-                    content = extract_text_from_pdf(filepath)
-                else:
-                    continue
+            filepath = os.path.abspath(result['path'])  # Het absolute pad
+            is_pdf = filepath.lower().endswith('.pdf')
 
-            matches = search_in_text(content, query_str)
+            if is_pdf:
+                content = extract_text_from_pdf(filepath)
+            elif filepath.lower().endswith('.docx'):
+                content = extract_text_from_docx(filepath)
+            else:
+                content = result.get('content', '')
+
+            matches = search_in_text(content, query_str, is_pdf)
             if matches:
                 results_data.append({"path": filepath, "matches": matches})
 
     return jsonify(results_data)
 
+@app.route('/open-file-location', methods=['POST'])
+def open_file_location():
+    data = request.json
+    filepath = data.get('filepath')
+    
+    if filepath:
+        try:
+            if platform.system() == "Windows":
+                os.startfile(os.path.dirname(filepath))
+            elif platform.system() == "Darwin":  # macOS
+                subprocess.Popen(["open", os.path.dirname(filepath)])
+            else:  # Linux
+                subprocess.Popen(["xdg-open", os.path.dirname(filepath)])
+            return jsonify({"success": True})
+        except Exception as e:
+            logging.error(f"Error opening file location: {e}")
+            return jsonify({"success": False, "error": str(e)}), 500
+    else:
+        return jsonify({"success": False, "error": "No filepath provided"}), 400
+    
 if __name__ == '__main__':
     root_dir = os.path.join(os.path.dirname(__file__), 'documents')
     create_index(root_dir)
