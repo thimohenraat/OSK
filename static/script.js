@@ -27,9 +27,16 @@ document.getElementById("search-form").addEventListener("submit", function(e) {
                 const path = document.createElement("h3");
                 path.textContent = `File: ${result.path}`;
                 path.addEventListener("click", function() {
-                    openFileLocation(result.path);
+                    openFileOrLocation(result.path, "location");
                 });
                 resultItem.appendChild(path);
+
+                const bestand = document.createElement("h4");
+                bestand.textContent = `Bestand: ${result.filename}`;
+                bestand.addEventListener("click", function() {
+                    openFileOrLocation(result.path, "file");
+                });
+                resultItem.appendChild(bestand);
 
                 result.matches.forEach(match => {
                     const matchPara = document.createElement("p");
@@ -43,8 +50,12 @@ document.getElementById("search-form").addEventListener("submit", function(e) {
     });
 });
 
-function openFileLocation(filepath) {
-    fetch('/open-file-location', {
+function openFileOrLocation(filepath, action = 'file') {
+    const endpoint = action === 'file' ? '/open-file' : '/open-file-location';
+    const successMessage = action === 'file' ? 'Bestand geopend!' : 'Bestandslocatie geopend!';
+    const errorMessage = action === 'file' ? 'Kon het bestand niet openen:' : 'Kon de bestandslocatie niet openen:';
+
+    fetch(endpoint, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
@@ -54,13 +65,13 @@ function openFileLocation(filepath) {
     .then(response => response.json())
     .then(data => {
         if (data.success) {
-            alert('Bestandslocatie geopend!');
+            alert(successMessage);
         } else {
-            alert('Kon de bestandslocatie niet openen: ' + (data.error || 'Onbekende fout'));
+            alert(`${errorMessage} ${data.error || 'Onbekende fout'}`);
         }
     })
     .catch((error) => {
         console.error('Error:', error);
-        alert('Er is een fout opgetreden bij het openen van de bestandslocatie.');
+        alert(`Er is een fout opgetreden bij het openen van ${action === 'file' ? 'het bestand' : 'de bestandslocatie'}.`);
     });
 }

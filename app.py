@@ -4,7 +4,6 @@ from whoosh.fields import Schema, TEXT, ID
 from whoosh.qparser import QueryParser
 import os
 from docx import Document
-import PyPDF2
 import fitz   
 import re
 import logging
@@ -120,6 +119,7 @@ def search():
 
         for result in results:
             filepath = os.path.abspath(result['path'])  # Het absolute pad
+            filename = os.path.basename(filepath)
             is_pdf = filepath.lower().endswith('.pdf')
 
             if is_pdf:
@@ -131,7 +131,7 @@ def search():
 
             matches = search_in_text(content, query_str, is_pdf)
             if matches:
-                results_data.append({"path": filepath, "matches": matches})
+                results_data.append({"path": filepath, "filename": filename, "matches": matches})
 
     return jsonify(results_data)
 
@@ -155,7 +155,29 @@ def open_file_location():
     else:
         return jsonify({"success": False, "error": "No filepath provided"}), 400
     
+@app.route('/open-file', methods=['POST'])
+def open_file():
+    data = request.json
+    filepath = data.get('filepath')
+    
+    if filepath:
+        try:
+            if platform.system() == "Windows":
+                os.startfile(filepath)  # Dit opent het bestand in de standaard applicatie
+            elif platform.system() == "Darwin":  # macOS
+                subprocess.call(('open', filepath))
+            else:  # Linux
+                subprocess.call(('xdg-open', filepath))
+            return jsonify({"success": True, "message": "Bestand geopend"})
+        except Exception as e:
+            logging.error(f"Error opening file: {e}")
+            return jsonify({"success": False, "error": str(e)}), 500
+    else:
+        return jsonify({"success": False, "error": "Geen bestandspad opgegeven"}), 400
+    
 if __name__ == '__main__':
     root_dir = os.path.join(os.path.dirname(__file__), 'documents')
     create_index(root_dir)
     app.run(debug=True)
+
+
