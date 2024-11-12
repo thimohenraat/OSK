@@ -9,6 +9,7 @@ import re
 import logging
 import subprocess
 import platform
+import time
 
 app = Flask(__name__, template_folder='templates', static_folder='static')
 logging.basicConfig(level=logging.INFO)
@@ -115,11 +116,15 @@ def search():
         parser = QueryParser("content", ix.schema)
         query = parser.parse(query_str)
         results = searcher.search(query)
-        print(results)
 
         for result in results:
             filepath = os.path.abspath(result['path'])  # Het absolute pad
             filename = os.path.basename(filepath)
+
+            # Haal de modificatiedatum van het bestand op
+            mod_time = os.path.getmtime(filepath)
+            date_modified = time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(mod_time))
+
             is_pdf = filepath.lower().endswith('.pdf')
 
             if is_pdf:
@@ -131,7 +136,7 @@ def search():
 
             matches = search_in_text(content, query_str, is_pdf)
             if matches:
-                results_data.append({"path": filepath, "filename": filename, "matches": matches})
+                results_data.append({"path": filepath, "filename": filename, "matches": matches, "date_modified": date_modified})
 
     return jsonify(results_data)
 
