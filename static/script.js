@@ -40,7 +40,8 @@ document.getElementById("search-form").addEventListener("submit", function(e) {
 
                 result.matches.forEach(match => {
                     const matchPara = document.createElement("p");
-                    matchPara.textContent = match;
+                    // matchPara.textContent = match;
+                    matchPara.innerHTML = highlightSearchTerm(match, query);
                     resultItem.appendChild(matchPara);
                 });
 
@@ -49,6 +50,16 @@ document.getElementById("search-form").addEventListener("submit", function(e) {
         }
     });
 });
+
+function highlightSearchTerm(text, searchTerm) {
+    if (!searchTerm) return text;
+    const regex = new RegExp(`(${escapeRegExp(searchTerm)})`, 'gi');
+    return text.replace(regex, '<span class="highlight">$1</span>');
+}
+
+function escapeRegExp(string) {
+    return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+}
 
 function openFileOrLocation(filepath, action = 'file') {
     const endpoint = action === 'file' ? '/open-file' : '/open-file-location';

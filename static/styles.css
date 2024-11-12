@@ -69,3 +69,8 @@ button:hover {
     color: #333;
     margin: 5px 0;
 }
+
+.highlight {
+    background-color: yellow;
+    font-weight: bold;
+}
