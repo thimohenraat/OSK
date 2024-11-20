@@ -105,9 +105,14 @@ def index():
 @app.route('/search', methods=['POST'])
 def search():
     query_str = request.form.get("query")
+    file_types = request.form.get("file_types", "")  # Ontvang bestandstypen als een string
 
     if not query_str:
         return jsonify({"error": "No query provided"}), 400
+    
+    # Converteer bestandstypen naar een lijst
+    file_types = [f".{ft.strip().lower()}" if not ft.startswith('.') else ft.strip().lower() 
+                  for ft in file_types.split(",")] if file_types else []
 
     ix = open_dir("indexdir")
     results_data = []
@@ -120,6 +125,14 @@ def search():
         for result in results:
             filepath = os.path.abspath(result['path'])  # Het absolute pad
             filename = os.path.basename(filepath)
+
+            # Controleer bestandstypefilter
+            file_extension = os.path.splitext(filepath)[-1].lower()
+            
+            print(file_extension)
+            print(file_types)
+            if file_types and file_extension not in file_types:
+                continue  # Overslaan als het bestandstype niet is geselecteerd
 
             # Haal de modificatiedatum van het bestand op
             mod_time = os.path.getmtime(filepath)

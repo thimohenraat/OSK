@@ -8,13 +8,36 @@
 </head>
 <body>
     <div class="container">
+
         <h1 id="titel">ZOEKMACHINE</h1>
+
         <form id="search-form" class="container-bar">
             <input type="text" id="query" name="query" placeholder="Zoekterm..." required>
             <button type="submit">Search</button>
         </form>
+
         <button id="sort-button">Sorteer op datum</button>
+
+        <details>
+            <summary>Kies bestandstypen</summary>
+            <div class="file-types">
+                <label>
+                    <input type="checkbox" name="file-type" value="pdf"> PDF
+                </label>
+                <label>
+                    <input type="checkbox" name="file-type" value="docx"> Word
+                </label>
+                <label>
+                    <input type="checkbox" name="file-type" value="powerpoint"> PowerPoint
+                </label>
+                <label>
+                    <input type="checkbox" name="file-type" value="excel"> Excel
+                </label>
+            </div>
+        </details>
+
         <div id="results"></div>
+
     </div>
     <script src="{{ url_for('static', filename='script.js') }}"></script>
 </body>
