@@ -5,10 +5,16 @@ export function handleSearchFormSubmit(e) {
     e.preventDefault();
     const query = e.target.query.value;
 
-    // Verzamel geselecteerde bestandstypen
+    // Haal de geselecteerde bestandstypen op en voeg een punt toe als dat nodig is
     const selectedFileTypes = Array.from(
         document.querySelectorAll('input[name="file-type"]:checked')
-    ).map((checkbox) => checkbox.value);
+    ).map(checkbox => {
+        let value = checkbox.value.trim();
+        if (!value.startsWith('.')) {
+            value = '.' + value;  // Voeg punt toe als dit niet al is toegevoegd
+        }
+        return value;
+    });
 
     fetch("/search", {
         method: "POST",

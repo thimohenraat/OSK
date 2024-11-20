@@ -1,4 +1,6 @@
 import { highlightSearchTerm } from './utils.js';
+import { openFileOrLocation } from './fileActions.js';
+
 
 export function renderResults(results) {
     const resultsDiv = document.getElementById("results");
