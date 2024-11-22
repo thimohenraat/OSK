@@ -28,6 +28,4 @@ def open_file_route():
     return open_file(data)
 
 if __name__ == '__main__':
-    root_dir = 'documents'
-    create_index(root_dir)
-    app.run(debug=True)
+    app.run(host='0.0.0.0', port=5000)
