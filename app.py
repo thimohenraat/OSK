@@ -28,4 +28,6 @@ def open_file_route():
     return open_file(data)
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=5000)
+    root_dir = 'documents'
+    create_index(root_dir)
+    app.run(host='0.0.0.0', port=10000)  # Zorg voor deze configuratie
