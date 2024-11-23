@@ -5,18 +5,22 @@ import os
 import time
 from extractor import extract_text_from_docx, extract_text_from_pdf
 
-def search_files(query_str, file_types):
+def search_files(query_str, file_types, search_location):
     ix = open_dir("indexdir")
     results_data = []
 
     with ix.searcher() as searcher:
         parser = QueryParser("content", ix.schema)
         query = parser.parse(query_str)
-        results = searcher.search(query)
+        results = searcher.search(query, limit=20)  # Geen limiet op het aantal resultaten
 
         for result in results:
             filepath = os.path.abspath(result['path'])  
             filename = os.path.basename(filepath)
+
+            # Controleer of het bestand in de opgegeven map ligt
+            if not filepath.startswith(os.path.abspath(search_location)):
+                continue
 
             # Controleer bestandstypefilter
             file_extension = os.path.splitext(filepath)[-1].lower()
