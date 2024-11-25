@@ -1,11 +1,19 @@
 import { getCurrentResults, setCurrentResults, sortDirection, setSortDirection } from './state.js';
 
 export function sortByDate(results = getCurrentResults()) {
-    results.sort((a, b) =>
-        new Date(b.dateModified) - new Date(a.dateModified)
-    );
+    const currentSortDirection = sortDirection();
+    const isDescending = currentSortDirection === 'desc';
+    
+    results.sort((a, b) => {
+        const dateA = new Date(a.dateModified);
+        const dateB = new Date(b.dateModified);
+        
+        return isDescending ? dateB - dateA : dateA - dateB;
+    });
 
-    const newSortDirection = sortDirection === 'desc' ? 'asc' : 'desc';
+
+    // Wissel de sorteerrichting voor de volgende keer
+    const newSortDirection = isDescending ? 'asc' : 'desc';
     setSortDirection(newSortDirection);
 
     setCurrentResults(results);

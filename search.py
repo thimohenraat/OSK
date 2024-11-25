@@ -1,5 +1,6 @@
 from whoosh.index import open_dir
 from whoosh.qparser import QueryParser
+from whoosh.query import FuzzyTerm
 from extractor import search_in_text
 import os
 import time
@@ -11,7 +12,9 @@ def search_files(query, file_extensions, directory):
 
     with index.searcher() as searcher:
         parser = QueryParser("content", index.schema)
-        parsed_query = parser.parse(query)
+        fuzzy_query = f"{query}"  
+        parsed_query = parser.parse(fuzzy_query)
+
         found_results = searcher.search(parsed_query, limit=None)
 
         for result in found_results:
