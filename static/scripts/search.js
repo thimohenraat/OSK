@@ -19,7 +19,6 @@ export function handleSearchFormSubmit(e, callback) {
     // Als geen bestandstypen zijn geselecteerd, gebruik een lege string
     const fileTypes = selectedFileTypes.length > 0 ? selectedFileTypes.join(',') : '';
 
-
     // Haal de zoeklocatie op van het invoerveld
     const searchLocation = document.getElementById("index-location").value.trim();
 

@@ -12,7 +12,7 @@ def search_files(query_str, file_types, search_location):
     with ix.searcher() as searcher:
         parser = QueryParser("content", ix.schema)
         query = parser.parse(query_str)
-        results = searcher.search(query, limit=20)  # Geen limiet op het aantal resultaten
+        results = searcher.search(query, limit=None)  # Geen limiet op het aantal resultaten
 
         for result in results:
             filepath = os.path.abspath(result['path'])  
