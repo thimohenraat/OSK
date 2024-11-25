@@ -3,11 +3,17 @@ import { sortByDate } from './sort.js';
 import { renderResults } from './render.js';
 import { getCurrentResults, setCurrentResults  } from './state.js';
 import { handleIndexingFormSubmit } from './index.js';
+import { renderFileTree } from './fileTree.js';
 
 document.getElementById("search-form").addEventListener("submit", (e) => {
-    handleSearchFormSubmit(e, (results) => {
+    handleSearchFormSubmit(e, (results, fileStructure) => {
         setCurrentResults(results);
         renderResults(results);
+
+        const matchingFiles = results.map(result => result.path);
+
+        renderFileTree(fileStructure, matchingFiles);  // Geef ook matchingFiles door
+        
     });
 });
 

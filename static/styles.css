@@ -96,3 +96,57 @@ label {
     font-size: 14px;
     cursor: pointer;
 }
+
+.path-container {
+    margin-bottom: 10px;
+    font-size: 0.9em;
+    color: #555;
+}
+
+.path-part {
+    cursor: pointer;
+}
+
+.path-part:hover {
+    text-decoration: underline;
+    color: #007bff;
+}
+
+.path-separator {
+    margin: 0 5px;
+    color: #999;
+}
+
+#file-tree ul {
+    list-style-type: none;
+    padding-left: 20px;
+}
+
+#file-tree li {
+    margin: 5px 0;
+    position: relative;
+}
+
+#file-tree li::before {
+    content: '├─';
+    position: absolute;
+    left: -15px;
+}
+
+#file-tree li:last-child::before {
+    content: '└─';
+}
+
+.folder {
+    cursor: pointer;
+}
+
+.folder::before {
+    content: '📁';
+    margin-right: 5px;
+}
+
+.file::before {
+    content: '📄';
+    margin-right: 5px;
+}

@@ -1,6 +1,7 @@
 from flask import Flask, request, jsonify, render_template
 from indexer import create_index
 from search import search_files
+from file_structure import build_file_structure
 from file_handler import open_file_location, open_file
 import os
 
@@ -40,7 +41,12 @@ def search():
 
         try:
             results = search_files(query, file_types, search_location)
-            return jsonify(results)
+            file_structure = build_file_structure(search_location)
+
+            return jsonify({
+                "results": results,
+                "file_structure": file_structure
+            })
         except Exception as error:
             return jsonify({"error": str(error)}), 500
 

@@ -1,5 +1,6 @@
 import { setCurrentResults } from './state.js';
 import { renderResults } from './render.js';
+import { renderFileTree } from './fileTree.js';
 
 export function handleSearchFormSubmit(event, callback) {
     event.preventDefault();
@@ -36,9 +37,11 @@ export function handleSearchFormSubmit(event, callback) {
             throw new Error('Invalid JSON response');
         }
     })
-    .then(results => {
-        setCurrentResults(results);
-        renderResults(results);
+    .then(data => {
+        callback(data.results, data.file_structure);
+        // setCurrentResults(data.results);
+        // renderResults(data.results);
+        // renderFileTree(data.file_structure); 
     })
     .catch(error => {
         console.error("Error during search:", error);

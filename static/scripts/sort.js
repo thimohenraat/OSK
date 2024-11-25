@@ -11,7 +11,6 @@ export function sortByDate(results = getCurrentResults()) {
         return isDescending ? dateB - dateA : dateA - dateB;
     });
 
-
     // Wissel de sorteerrichting voor de volgende keer
     const newSortDirection = isDescending ? 'asc' : 'desc';
     setSortDirection(newSortDirection);
