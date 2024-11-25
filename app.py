@@ -25,34 +25,27 @@ def index_route():
 @app.route('/search', methods=['POST'])
 def search():
     try:
-        # Gebruik request.form om gegevens op te halen
-        query_str = request.form.get("query")  # Verkrijg de zoekterm
-        file_types = request.form.get("file_types", "").strip()  # Bestandstypen ophalen als lijst
-        search_location = request.form.get("search_location", None)  # Zoeklocatie ophalen
+        query = request.form.get("query")
+        file_types = request.form.get("file_types", "").strip().split(',')
+        search_location = request.form.get("search_location")
 
-        # Als geen bestandstypen zijn opgegeven, stel alle ondersteunde extensies in
-        if not file_types:
-            file_types = ['.pdf', '.docx', '.pptx', '.xlsx']  # Voeg meer bestandstypen toe indien nodig
-        else:
-            file_types = file_types.split(',')
+        if not file_types or file_types == ['']:
+            file_types = ['.pdf', '.docx', '.pptx', '.xlsx']
 
         if not search_location:
-            print("No search location provided")
-            return jsonify({"error": "Geen zoeklocatie opgegeven"}), 400
-        
+            return jsonify({"error": "No search location provided"}), 400
+
         if not os.path.exists(search_location):
-            print(f"Location does not exist: {search_location}")
-            return jsonify({"error": f"Locatie niet gevonden: {search_location}"}), 400
-        
+            return jsonify({"error": f"Location not found: {search_location}"}), 400
+
         try:
-            results_data = search_files(query_str, file_types, search_location)
-            return jsonify(results_data)
-        except Exception as e:
-            return jsonify({"error": str(e)}), 500
-        
-    except Exception as e:
-        print(f"Unexpected error in search: {e}")
-        return jsonify({"error": str(e)}), 500
+            results = search_files(query, file_types, search_location)
+            return jsonify(results)
+        except Exception as error:
+            return jsonify({"error": str(error)}), 500
+
+    except Exception as error:
+        return jsonify({"error": str(error)}), 500
     
 @app.route('/open-file-location', methods=['POST'])
 def open_file_location_route():

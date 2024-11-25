@@ -3,21 +3,23 @@ import fitz
 import logging
 import re
 
-def extract_text_from_docx(docx_path):
+def extract_text_from_docx(docx_file_path):
     try:
-        doc = Document(docx_path)
-        full_text = [para.text for para in doc.paragraphs]
-        return '\n'.join(full_text)
-    except Exception as e:
-        logging.error(f"Error extracting text from DOCX {docx_path}: {e}")
+        document = Document(docx_file_path)
+        paragraph_texts = [paragraph.text for paragraph in document.paragraphs]
+        full_text = "\n".join(paragraph_texts)
+        return full_text
+    except Exception as error:
+        logging.error(f"Failed to extract text from DOCX at {docx_file_path}: {error}")
         return ""
 
 def extract_text_from_pdf(pdf_path):
     try:
-        with fitz.open(pdf_path) as doc:
-            return [(page.number + 1, page.get_text()) for page in doc]
-    except Exception as e:
-        logging.error(f"Error extracting text from PDF {pdf_path}: {e}")
+        with fitz.open(pdf_path) as pdf_document:
+            page_texts = [(page.number + 1, page.get_text()) for page in pdf_document]
+            return page_texts
+    except Exception as error:
+        logging.error(f"Failed to extract text from PDF at {pdf_path}: {error}")
         return []
 
 def search_in_text(content, query, is_pdf=False):
