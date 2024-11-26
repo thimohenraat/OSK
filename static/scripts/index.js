@@ -27,3 +27,32 @@ export function handleIndexingFormSubmit(event, callback) {
         })
         .catch(error => alert("Er is een fout opgetreden bij het indexeren."));
 }
+
+export function checkIndexStatus() {
+    const locationInput = document.getElementById('index-location');
+    locationInput.addEventListener('input', function() {
+        const location = this.value;
+        const indexButton = document.getElementById('index-button');
+        if (location) {
+            fetch('/check-index', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ location })
+            })
+            .then(response => response.json())
+            .then(data => {
+                const statusElement = document.getElementById('index-status');
+                if (data.indexed) {
+                    indexButton.disabled = true;
+                    statusElement.textContent = `Map ${location} is al geïndexeerd.`;
+                } else {
+                    indexButton.disabled = false;
+                    statusElement.textContent = `Map ${location} is nog niet geïndexeerd.`;
+                }
+            })
+            .catch(error => {
+                console.error("Fout bij het controleren van de indexeerstatus:", error);
+            });
+        }
+    });
+}

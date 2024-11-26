@@ -3,6 +3,8 @@ from indexer import create_index
 from search import search_files
 from file_structure import build_file_structure
 from file_handler import open_file_location, open_file
+from whoosh.index import open_dir
+from whoosh.qparser import QueryParser
 import os
 
 app = Flask(__name__, template_folder='templates', static_folder='static')
@@ -22,6 +24,23 @@ def index_route():
         return jsonify({"success": True, "message": f"Bestanden in {location} zijn geïndexeerd."})
     else:
         return jsonify({"success": False, "error": f"Kon bestanden in {location} niet indexeren."}), 500
+    
+@app.route('/check-index', methods=['POST'])
+def check_index():
+    data = request.json
+    location = data.get("location")
+    if not location:
+        return jsonify({"indexed": False, "error": "Geen locatie opgegeven"}), 400
+    
+    index_dir = "indexdir"
+    if not os.path.exists(index_dir):
+        return jsonify({"indexed": False})
+    
+    with open_dir(index_dir).searcher() as searcher:
+        parser = QueryParser("path", schema=searcher.schema)
+        query = parser.parse(f"path:{location}*")
+        result = searcher.search(query, limit=1)
+        return jsonify({"indexed": len(result) > 0})
 
 @app.route('/search', methods=['POST'])
 def search():
