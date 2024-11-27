@@ -1,60 +1,54 @@
 import { setCurrentResults } from './state.js';
 import { renderResults } from './render.js';
+import { renderFileTree } from './fileTree.js';
 
-export function handleSearchFormSubmit(e, callback) {
-    e.preventDefault();
-    const query = e.target.query.value.trim();
+export function handleSearchFormSubmit(event, callback) {
+    event.preventDefault();
+    const searchQuery = event.target.query.value.trim();
+    const searchType = document.getElementById('search-type').value;
 
-    // Haal de geselecteerde bestandstypen op en voeg een punt toe als dat nodig is
     const selectedFileTypes = Array.from(
-        document.querySelectorAll('input[name="file-type"]:checked')
+        document.querySelectorAll('input[name="file-type"]:checked') || []
     ).map(checkbox => {
-        let value = checkbox.value.trim().toLowerCase();
-        if (!value.startsWith('.')) {
-            value = '.' + value;  // Voeg punt toe als dit niet al is toegevoegd
-        }
-        return value;
+        let type = checkbox.value.trim().toLowerCase();
+        return type.startsWith('.') ? type : `.${type}`;
     });
 
-    // Als geen bestandstypen zijn geselecteerd, gebruik een lege string
-    const fileTypes = selectedFileTypes.length > 0 ? selectedFileTypes.join(',') : '';
-
-    // Haal de zoeklocatie op van het invoerveld
+    const fileTypesParam = selectedFileTypes.length ? selectedFileTypes.join(',') : '';
     const searchLocation = document.getElementById("index-location").value.trim();
 
-    const body = new URLSearchParams({
-        query,
-        file_types: fileTypes,
-        search_location: searchLocation
+    const requestBody = new URLSearchParams({
+        query: searchQuery,
+        file_types: fileTypesParam,
+        search_location: searchLocation,
+        search_type: searchType,
     });
-
-    console.log('Request Body:', body);
 
     fetch("/search", {
         method: "POST",
         headers: {
             'Content-Type': 'application/x-www-form-urlencoded',
         },
-        body: body
+        body: requestBody
     })
-    .then(async response => {
-        console.log('Response Status:', response.status);
-        const text = await response.text();
+    .then(response => response.text())
+    .then(text => {
         try {
             return JSON.parse(text);
-        } catch (err) {
-            console.error('Failed to parse response:', text);
+        } catch {
             throw new Error('Invalid JSON response');
         }
     })
     .then(data => {
-        console.log('Response Data:', data);
-        
-        setCurrentResults(data); // Sla de resultaten op via state.js
-        renderResults(data);
+        if (Array.isArray(data.results)) {
+            callback(data.results, data.file_structure);
+        } else {
+            console.error("results is geen geldige array:", data.results);
+            alert("De zoekresultaten konden niet correct worden geladen.");
+        }
     })
     .catch(error => {
         console.error("Error during search:", error);
-        alert("Er is een fout opgetreden bij de zoekopdracht.");
+        alert("An error occurred during the search.");
     });
 }

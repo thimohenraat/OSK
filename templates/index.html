@@ -4,22 +4,37 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Zoekmachine</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,200..800;1,200..800&display=swap" rel="stylesheet">
+    <head>
+        {% assets "scss_all" %}
+            <link rel="stylesheet" href="{{ ASSET_URL }}">
+        {% endassets %}
+    </head>
 </head>
 <body>
+    <header>    
+        <img src="{{ url_for('static', filename='images/logo.png') }}" alt="rijkswaterstaat logo">
+    </header>
     <div class="container">
-
-        <h1 id="titel">ZOEKMACHINE</h1>
         
         <summary>Indexeer een map</summary>
         <form id="index-form">
             <input type="text" id="index-location" name="location" placeholder="Voer een maplocatie in" required>
-            <button type="submit">Indexeer</button>
+            <button type="submit" id="index-button">Indexeer</button>
+            <p id="index-status"></p> 
         </form>
 
         <form id="search-form" class="container-bar">
             <input type="text" id="query" name="query" placeholder="Zoekterm..." required>
-            <button type="submit">Search</button>
+            <select id="search-type">
+                <option value="exact">Exacte tekst</option>
+                <option value="all_terms">Alle termen</option>
+                <option value="any_term">Minstens 1 term</option>
+                </option>
+            </select>
+            <button type="submit">Zoeken</button>
         </form>
 
         <button id="sort-button">Sorteer op datum</button>
@@ -41,6 +56,8 @@
                 </label>
             </div>
         </details>
+
+        <div id="file-tree"></div>
 
         <div id="results"></div>
 

@@ -1,10 +1,20 @@
 from flask import Flask, request, jsonify, render_template
 from indexer import create_index
 from search import search_files
+from file_structure import build_file_structure
 from file_handler import open_file_location, open_file
+from whoosh.index import open_dir
+from whoosh.qparser import QueryParser
 import os
+from flask_assets import Environment, Bundle
 
 app = Flask(__name__, template_folder='templates', static_folder='static')
+
+# Configureer Flask-Assets
+assets = Environment(app)
+assets.url = app.static_url_path
+scss = Bundle('scss/styles.scss', filters='libsass', output='css/styles.css')
+assets.register('scss_all', scss)
 
 @app.route('/')
 def index():
@@ -21,38 +31,54 @@ def index_route():
         return jsonify({"success": True, "message": f"Bestanden in {location} zijn geïndexeerd."})
     else:
         return jsonify({"success": False, "error": f"Kon bestanden in {location} niet indexeren."}), 500
+    
+@app.route('/check-index', methods=['POST'])
+def check_index():
+    data = request.json
+    location = data.get("location")
+    if not location:
+        return jsonify({"indexed": False, "error": "Geen locatie opgegeven"}), 400
+    
+    index_dir = "indexdir"
+    if not os.path.exists(index_dir):
+        return jsonify({"indexed": False})
+    
+    with open_dir(index_dir).searcher() as searcher:
+        parser = QueryParser("path", schema=searcher.schema)
+        query = parser.parse(f"path:{location}*")
+        result = searcher.search(query, limit=1)
+        return jsonify({"indexed": len(result) > 0})
 
 @app.route('/search', methods=['POST'])
 def search():
     try:
-        # Gebruik request.form om gegevens op te halen
-        query_str = request.form.get("query")  # Verkrijg de zoekterm
-        file_types = request.form.get("file_types", "").strip()  # Bestandstypen ophalen als lijst
-        search_location = request.form.get("search_location", None)  # Zoeklocatie ophalen
+        query = request.form.get("query")
+        file_types = request.form.get("file_types", "").strip().split(',')
+        search_location = request.form.get("search_location")
+        search_type = request.form.get("search_type")
 
-        # Als geen bestandstypen zijn opgegeven, stel alle ondersteunde extensies in
-        if not file_types:
-            file_types = ['.pdf', '.docx', '.pptx', '.xlsx']  # Voeg meer bestandstypen toe indien nodig
-        else:
-            file_types = file_types.split(',')
+        if not file_types or file_types == ['']:
+            file_types = ['.pdf', '.docx', '.pptx', '.xlsx']
 
         if not search_location:
-            print("No search location provided")
-            return jsonify({"error": "Geen zoeklocatie opgegeven"}), 400
-        
+            return jsonify({"error": "No search location provided"}), 400
+
         if not os.path.exists(search_location):
-            print(f"Location does not exist: {search_location}")
-            return jsonify({"error": f"Locatie niet gevonden: {search_location}"}), 400
-        
+            return jsonify({"error": f"Location not found: {search_location}"}), 400
+
         try:
-            results_data = search_files(query_str, file_types, search_location)
-            return jsonify(results_data)
-        except Exception as e:
-            return jsonify({"error": str(e)}), 500
-        
-    except Exception as e:
-        print(f"Unexpected error in search: {e}")
-        return jsonify({"error": str(e)}), 500
+            results = search_files(query, file_types, search_location, search_type)
+            file_structure = build_file_structure(search_location)
+
+            return jsonify({
+                "results": results,
+                "file_structure": file_structure
+            })
+        except Exception as error:
+            return jsonify({"error": str(error)}), 500
+
+    except Exception as error:
+        return jsonify({"error": str(error)}), 500
     
 @app.route('/open-file-location', methods=['POST'])
 def open_file_location_route():

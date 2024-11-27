@@ -1,49 +1,64 @@
 from whoosh.index import open_dir
-from whoosh.qparser import QueryParser
+from whoosh.qparser import QueryParser, OrGroup, AndGroup
+from whoosh.query import FuzzyTerm, Term, Or, And
 from extractor import search_in_text
 import os
 import time
 from extractor import extract_text_from_docx, extract_text_from_pdf
 
-def search_files(query_str, file_types, search_location):
-    ix = open_dir("indexdir")
-    results_data = []
+def search_files(query, file_extensions, directory, search_type):
+    index = open_dir("indexdir")
+    search_results = []
+    print(search_type)
 
-    with ix.searcher() as searcher:
-        parser = QueryParser("content", ix.schema)
-        query = parser.parse(query_str)
-        results = searcher.search(query, limit=None)  # Geen limiet op het aantal resultaten
+    with index.searcher() as searcher:
+        # exacte tekst wordt gezocht
+        if search_type == "exact":
+            parser = QueryParser("content", index.schema)
+            parsed_query = parser.parse(f'"{query}"')
+        # alle termen moeten aanwezig zijn
+        elif search_type == "all_terms": 
+            parser = QueryParser("content", index.schema, group=AndGroup)
+            parsed_query = parser.parse(query)
+        # tenminste één term moet aanwezig zijn
+        elif search_type == "any_term":
+            parser = QueryParser("content", index.schema, group=OrGroup)
+            parsed_query = parser.parse(query)
+        else:
+            raise ValueError("Ongeldig zoektype")
 
-        for result in results:
-            filepath = os.path.abspath(result['path'])  
-            filename = os.path.basename(filepath)
+        found_results = searcher.search(parsed_query, limit=None)
 
-            # Controleer of het bestand in de opgegeven map ligt
-            if not filepath.startswith(os.path.abspath(search_location)):
+        for result in found_results:
+            file_path = os.path.abspath(result['path'])
+            file_name = os.path.basename(file_path)
+
+            if not file_path.startswith(os.path.abspath(directory)):
                 continue
 
-            # Controleer bestandstypefilter
-            file_extension = os.path.splitext(filepath)[-1].lower()
-            # Print debugging informatie
-            print(f"File Extension: {file_extension}, Selected File Types: {file_types}")
-
-            if file_types and file_extension not in file_types:
+            ext = os.path.splitext(file_path)[-1].lower()
+            if file_extensions and ext not in file_extensions:
                 continue
 
-            mod_time = os.path.getmtime(filepath)
-            date_modified = time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(mod_time))
+            modification_time = os.path.getmtime(file_path)
+            last_modified = time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(modification_time))
 
-            is_pdf = filepath.lower().endswith('.pdf')
+            is_pdf = file_path.lower().endswith('.pdf')
 
             if is_pdf:
-                content = extract_text_from_pdf(filepath)
-            elif filepath.lower().endswith('.docx'):
-                content = extract_text_from_docx(filepath)
+                content = extract_text_from_pdf(file_path)
+            elif file_path.lower().endswith('.docx'):
+                content = extract_text_from_docx(file_path)
             else:
                 content = result.get('content', '')
 
-            matches = search_in_text(content, query_str, is_pdf)
-            if matches:
-                results_data.append({"path": filepath, "filename": filename, "matches": matches, "date_modified": date_modified})
+            text_matches = search_in_text(content, query, is_pdf, search_type)
+            if text_matches:
+                search_results.append({
+                    "path": file_path,
+                    "filename": file_name,
+                    "matches": text_matches,
+                    "date_modified": last_modified
+                })
 
-    return results_data
+    return search_results

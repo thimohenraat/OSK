@@ -3,3 +3,4 @@ build/
 __pycache__/
 dist/
 indexdir/
+.webassets-cache
