@@ -48,6 +48,7 @@ def search():
         query = request.form.get("query")
         file_types = request.form.get("file_types", "").strip().split(',')
         search_location = request.form.get("search_location")
+        search_type = request.form.get("search_type")
 
         if not file_types or file_types == ['']:
             file_types = ['.pdf', '.docx', '.pptx', '.xlsx']
@@ -59,7 +60,7 @@ def search():
             return jsonify({"error": f"Location not found: {search_location}"}), 400
 
         try:
-            results = search_files(query, file_types, search_location)
+            results = search_files(query, file_types, search_location, search_type)
             file_structure = build_file_structure(search_location)
 
             return jsonify({

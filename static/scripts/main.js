@@ -31,5 +31,3 @@ document.getElementById("index-form").addEventListener("submit", (e) => {
 
 // Roep de functie aan om de indexstatus te controleren
 checkIndexStatus();
-
-document.getElementById('search-form').addEventListener('submit', handleSearchFormSubmit);

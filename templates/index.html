@@ -20,7 +20,13 @@
 
         <form id="search-form" class="container-bar">
             <input type="text" id="query" name="query" placeholder="Zoekterm..." required>
-            <button type="submit">Search</button>
+            <select id="search-type">
+                <option value="exact">Exacte tekst</option>
+                <option value="all_terms">Alle termen</option>
+                <option value="any_term">Minstens 1 term</option>
+                </option>
+            </select>
+            <button type="submit">Zoeken</button>
         </form>
 
         <button id="sort-button">Sorteer op datum</button>

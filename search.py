@@ -1,19 +1,31 @@
 from whoosh.index import open_dir
-from whoosh.qparser import QueryParser
-from whoosh.query import FuzzyTerm
+from whoosh.qparser import QueryParser, OrGroup, AndGroup
+from whoosh.query import FuzzyTerm, Term, Or, And
 from extractor import search_in_text
 import os
 import time
 from extractor import extract_text_from_docx, extract_text_from_pdf
 
-def search_files(query, file_extensions, directory):
+def search_files(query, file_extensions, directory, search_type):
     index = open_dir("indexdir")
     search_results = []
+    print(search_type)
 
     with index.searcher() as searcher:
-        parser = QueryParser("content", index.schema)
-        fuzzy_query = f"{query}"  
-        parsed_query = parser.parse(fuzzy_query)
+        # exacte tekst wordt gezocht
+        if search_type == "exact":
+            parser = QueryParser("content", index.schema)
+            parsed_query = parser.parse(f'"{query}"')
+        # alle termen moeten aanwezig zijn
+        elif search_type == "all_terms": 
+            parser = QueryParser("content", index.schema, group=AndGroup)
+            parsed_query = parser.parse(query)
+        # tenminste één term moet aanwezig zijn
+        elif search_type == "any_term":
+            parser = QueryParser("content", index.schema, group=OrGroup)
+            parsed_query = parser.parse(query)
+        else:
+            raise ValueError("Ongeldig zoektype")
 
         found_results = searcher.search(parsed_query, limit=None)
 
@@ -40,7 +52,7 @@ def search_files(query, file_extensions, directory):
             else:
                 content = result.get('content', '')
 
-            text_matches = search_in_text(content, query, is_pdf)
+            text_matches = search_in_text(content, query, is_pdf, search_type)
             if text_matches:
                 search_results.append({
                     "path": file_path,
