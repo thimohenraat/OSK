@@ -6,8 +6,15 @@ from file_handler import open_file_location, open_file
 from whoosh.index import open_dir
 from whoosh.qparser import QueryParser
 import os
+from flask_assets import Environment, Bundle
 
 app = Flask(__name__, template_folder='templates', static_folder='static')
+
+# Configureer Flask-Assets
+assets = Environment(app)
+assets.url = app.static_url_path
+scss = Bundle('scss/styles.scss', filters='libsass', output='css/styles.css')
+assets.register('scss_all', scss)
 
 @app.route('/')
 def index():
