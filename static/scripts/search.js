@@ -5,8 +5,8 @@ import { renderFileTree } from './fileTree.js';
 export function handleSearchFormSubmit(event, callback) {
     event.preventDefault();
     const searchQuery = event.target.query.value.trim();
-    const searchType = document.getElementById('search-type').value;
-
+    const searchType = document.querySelector('input[name="search_type"]:checked').value;
+    
     const selectedFileTypes = Array.from(
         document.querySelectorAll('input[name="file-type"]:checked') || []
     ).map(checkbox => {

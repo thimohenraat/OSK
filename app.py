@@ -13,7 +13,7 @@ app = Flask(__name__, template_folder='templates', static_folder='static')
 # Configureer Flask-Assets
 assets = Environment(app)
 assets.url = app.static_url_path
-scss = Bundle('scss/styles.scss', filters='libsass', output='css/styles.css')
+scss = Bundle('scss/main.scss', filters='libsass', output='css/styles.css')
 assets.register('scss_all', scss)
 
 @app.route('/')
