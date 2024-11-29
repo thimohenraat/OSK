@@ -1,0 +1,11 @@
+header {
+    width: 100%;
+    height: $header-height;
+    background-color: $secondary-color;
+    @include flex-center;
+  
+    img {
+      max-height: 100%;
+      object-fit: contain;
+    }
+  }
