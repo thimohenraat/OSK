@@ -20,14 +20,16 @@ export function renderResults(searchResults) {
         const resultItem = document.createElement("div");
         resultItem.classList.add("result-item");
 
-        const pathElement = document.createElement("h3");
+        const pathElement = document.createElement("h1");
+        pathElement.classList.add("result-title");
         pathElement.textContent = `File: ${searchResult.path}`;
         pathElement.addEventListener("click", () => {
             openFileOrLocation(searchResult.path, "location");
         });
         resultItem.appendChild(pathElement);
 
-        const fileNameElement = document.createElement("h4");
+        const fileNameElement = document.createElement("p");
+        fileNameElement.classList.add("result-path");
         fileNameElement.textContent = `Bestand: ${searchResult.filename}`;
         fileNameElement.addEventListener("click", () => {
             openFileOrLocation(searchResult.path, "file");
@@ -35,6 +37,7 @@ export function renderResults(searchResults) {
         resultItem.appendChild(fileNameElement);
 
         const dateModifiedElement = document.createElement("p");
+        dateModifiedElement.classList.add("result-snippet");
         dateModifiedElement.textContent = `Laatst gewijzigd: ${searchResult.date_modified}`;
         resultItem.appendChild(dateModifiedElement);
 

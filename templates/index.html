@@ -13,59 +13,65 @@
     <header>    
         <img src="{{ url_for('static', filename='images/logo.png') }}" alt="rijkswaterstaat logo">
     </header>
+    <!-- Hoofdcontainer -->
     <main class="container">
 
-        <section id="index-section">
-            <summary>Indexeer een map</summary>
-            <form id="index-form">
-                <input type="text" id="index-location" name="location" placeholder="Voer een maplocatie in" required>
-                <button type="submit" id="index-button">Indexeer</button>
-                <p id="index-status"></p> 
-            </form>
-        </section>
+        <nav class="filters">
 
-        <section id="search-section">
-            <form id="search-form" class="container-bar">
-
-                <div id="form-group">
-                    <input type="text" id="query" name="query" placeholder="Zoekterm..." required>
-
-                    <div id="search-type">
+            <section id="index-section">
+                <summary>Indexeer een map</summary>
+                <form id="index-form">
+                    <input type="text" id="index-location" name="location" placeholder="Voer een maplocatie in" required>
+                    <button type="submit" id="index-button">Indexeer</button>
+                    <p id="index-status"></p> 
+                </form>
+            </section>
+    
+            <section id="search-section">
+                <form id="search-form" class="container-bar">
+    
+                    <div id="form-group">
+                        <input type="text" id="query" name="query" placeholder="Zoekterm..." required>
+    
+                        <div id="search-type">
+                            <label>
+                                <input type="radio" name="search_type" value="exact" checked> Exacte tekst
+                            </label>
+                            <label>
+                                <input type="radio" name="search_type" value="all_terms"> Alle termen
+                            </label>
+                            <label>
+                                <input type="radio" name="search_type" value="any_term"> Minstens 1 term
+                            </label>
+                        </div>
+                    </div>
+    
+                    <button type="submit">Zoeken</button>
+                </form>
+        
+                <details>
+                    <summary>Kies bestandstypen</summary>
+                    <div class="file-types">
                         <label>
-                            <input type="radio" name="search_type" value="exact" checked> Exacte tekst
+                            <input type="checkbox" name="file-type" value="pdf"> PDF
                         </label>
                         <label>
-                            <input type="radio" name="search_type" value="all_terms"> Alle termen
+                            <input type="checkbox" name="file-type" value="docx"> Word
                         </label>
                         <label>
-                            <input type="radio" name="search_type" value="any_term"> Minstens 1 term
+                            <input type="checkbox" name="file-type" value="powerpoint"> PowerPoint
+                        </label>
+                        <label>
+                            <input type="checkbox" name="file-type" value="excel"> Excel
                         </label>
                     </div>
-                </div>
-
-                <button type="submit">Zoeken</button>
-            </form>
+                </details>
     
-            <details>
-                <summary>Kies bestandstypen</summary>
-                <div class="file-types">
-                    <label>
-                        <input type="checkbox" name="file-type" value="pdf"> PDF
-                    </label>
-                    <label>
-                        <input type="checkbox" name="file-type" value="docx"> Word
-                    </label>
-                    <label>
-                        <input type="checkbox" name="file-type" value="powerpoint"> PowerPoint
-                    </label>
-                    <label>
-                        <input type="checkbox" name="file-type" value="excel"> Excel
-                    </label>
-                </div>
-            </details>
+                <button id="sort-button">Sorteer op datum</button>
+            </section>
+    
+        </nav>
 
-            <button id="sort-button">Sorteer op datum</button>
-        </section>
 
 
         <section id="results-section">
@@ -78,24 +84,6 @@
 </body>
 </html>
 <!-- hoi ik ben een test -->
-
-
-<!-- <!DOCTYPE html>
-<html>
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Zoekmachine</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,200..800;1,200..800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="./css/style.css">
-</head>
-<body> -->
-    <!-- Header -->
-    <!-- <header>    
-        <img src="img/logo.png" alt="rijkswaterstaat logo">
-    </header> -->
 
     <!-- Hoofdcontainer -->
     <!-- <main class="container"> -->
