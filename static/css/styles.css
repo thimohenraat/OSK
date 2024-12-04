@@ -1,61 +1,217 @@
+/* Algemene styling */
 body {
   font-family: "Plus Jakarta Sans", sans-serif;
-  background-color: #f2f2f2;
+  background-color: #f8f9fa;
   margin: 0;
-  padding: 0; }
+  padding: 0;
+  color: #333;
+}
 
-.container {
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 20px; }
-
+/* Header */
 header {
   width: 100%;
-  height: 60px;
+  height: 80px;
   background-color: #F9E11E;
   display: flex;
   justify-content: center;
-  align-items: center; }
-  header img {
-    max-height: 100%;
-    object-fit: contain; }
-
-form {
-  display: flex;
-  gap: 10px;
-  margin-bottom: 15px; }
-  form input[type="text"], form select {
-    flex-grow: 1;
-    padding: 10px;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-    font-size: 16px; }
-  form button {
-    padding: 10px 20px;
-    background-color: #01689b;
-    color: white;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-    transition: background-color 0.3s; }
-    form button:hover {
-      background-color: #014668; }
-    form button:disabled {
-      background-color: #cccccc;
-      cursor: not-allowed; }
-
-.result-item {
-  border: 1px solid #ddd;
-  border-radius: 4px;
-  padding: 15px;
-  margin-bottom: 15px; 
+  align-items: center;
 }
-  .result-item h3 {
-    color: #01689b;
-    margin: 0 0 10px 0; }
-  .result-item p {
-    margin: 5px 0; }
+header img {
+  max-height: 100%;
+  object-fit: contain;
+}
 
-.highlight {
-  background-color: yellow;
-  font-weight: bold; }
+/* Hoofdcontainer */
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 20px 20px 20px;
+}
+
+/* Filter sectie */
+nav {
+  display: flex;
+  align-items: center;
+  margin: 2rem 0;
+  height: 8rem;
+}
+
+/* Indexeer sectie */
+#index-section {
+  background-color: #e6edf8;
+  border-radius: 8px;
+  padding: 20px 20px 10px 20px;
+  margin: 0 2rem 0 0;
+  /* max-width: 35rem; */
+  height: 8rem;
+}
+
+#index-section summary {
+  font-size: 1.2rem;
+  color: #01689b;
+  font-weight: bold;
+  margin-bottom: 10px;
+}
+
+#index-section #index-form input {
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  font-size: 1rem;
+}
+
+#index-section #index-form button {
+  padding: 10px;
+  background-color: #F9E11E;
+  border: none;
+  border-radius: 8px;
+  font-size: 1rem;
+  width: 6rem;
+  cursor: pointer;
+  margin: 0.5rem 0 0 0;
+}
+
+#index-section #index-form button:hover {
+  background-color: #e0c020;
+}
+
+/* #index-section #index-form #index-status {
+  color: #01689b;
+  font-size: 0.9rem;
+} */
+
+/* Zoek Sectie */
+#search-section {
+  max-width: 37.5rem;
+  height: 8rem;
+}
+
+#search-section #search-form {
+  display: flex;
+  flex-wrap: wrap;
+
+  /* gap: 20px; */
+  background-color: #e6edf8;
+  border-radius: 8px;
+  padding: 0 20px 20px 20px;
+}
+
+#search-section #search-form p {
+  font-size: 1.2rem;
+  color: #01689b;
+  font-weight: bold;
+  margin-bottom: 5px;
+}
+
+#search-section #search-form input[type=text] {
+  flex-grow: 1;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  font-size: 1rem;
+}
+
+#search-section #search-form button {
+  padding: 10px 15px;
+  background-color: #F9E11E;
+  border: none;
+  border-radius: 8px;
+  font-size: 1rem;
+  cursor: pointer;
+  margin: 0 0 10px 10px;
+}
+
+/* #search-section #search-form .sort-button {
+color: red;
+} */
+
+#search-section #search-form button:hover {
+  background-color: #e0c020;
+}
+.bestandsTypen {
+  margin: 0rem 0rem 0 2rem;
+  background-color: #e6edf8;
+  padding: 1rem 1rem 1rem 1rem;
+  border-radius: 8px;
+}
+
+.bestandsTypen p {
+  margin: 0 0 1rem 0;
+  font-size: 1.2rem;
+  color: #01689b;
+  font-weight: bold;
+}
+
+#search-section details summary {
+  font-weight: bold;
+  padding: 0.5rem 0.25rem;
+  cursor: pointer;
+  color: #01689b;
+}
+#search-section details .file-types {
+  margin-top: 10px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+#search-section details .file-types label {
+  font-size: 0.9rem;
+}
+#search-section .sort-button {
+  margin-top: 10px;
+  padding: 10px 15px;
+  background-color: rgba(253, 218, 36, 0.3137254902);
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+}
+#search-section .sort-button:hover {
+  background-color: #e0c020;
+}
+
+/* Resultaten sectie */
+#results-section {
+  display: flex;
+  gap: 20px;
+}
+#results-section #file-tree {
+  flex: 1;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  padding: 10px;
+  background-color: #fff;
+}
+#results-section #results {
+  flex: 2;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 20px;
+}
+#results-section #results .result-item {
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  background-color: #e6edf8;
+  padding: 15px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+#results-section #results .result-item:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 6px 10px rgba(0, 0, 0, 0.2);
+}
+#results-section #results .result-item .result-title {
+  font-size: 1.2rem;
+  font-weight: bold;
+  color: #01689b;
+  margin-bottom: 10px;
+}
+#results-section #results .result-item .result-path {
+  font-size: 0.9rem;
+  color: #666;
+  margin-bottom: 10px;
+}
+#results-section #results .result-item .result-snippet {
+  font-size: 1rem;
+  line-height: 1.6;
+  color: #333;
+}
