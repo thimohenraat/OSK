@@ -44,15 +44,14 @@ nav {
   border-radius: 8px;
   padding: 20px;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-  flex: 1;
   margin-bottom: 20px;
 }
 
-#search-section {
-  order: 2;
+/* Index Section */
+#index-section {
+  flex: 1;
 }
 
-/* Index Section */
 #index-section summary, #search-section summary {
   font-size: 1.2rem;
   color: #01689b;
@@ -93,18 +92,14 @@ nav {
 } */
 
 /* Zoek Sectie */
-#search-section {
-  max-width: 37.5rem;
-  height: 8rem;
-}
-
 #search-section #search-form {
   display: flex;
+  flex-direction: column;
   flex-wrap: wrap;
   /* gap: 20px; */
   background-color: #e6edf8;
   border-radius: 8px;
-  padding: 0 20px 20px 20px;
+  /* padding: 0 20px 20px 20px; */
 }
 
 #index-section #index-form button:disabled {
@@ -113,6 +108,10 @@ nav {
 }
 
 /* Search Section */
+#search-section {
+  flex: 2;
+}
+
 #search-section #search-form p {
   font-size: 1.2rem;
   color: #01689b;
@@ -128,6 +127,7 @@ nav {
   font-size: 1rem;
   cursor: pointer;
   margin: 10px 0 0 0;
+  align-self: baseline;
 }
 
 #search-section #search-form button:hover {
@@ -139,7 +139,7 @@ nav {
   display: flex;
   flex-direction: row;
   gap: 4rem;
-  margin-top: 20px;
+  margin-top: 20px;  
 }
 
 #sort-button {
