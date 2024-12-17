@@ -1,7 +1,7 @@
 from whoosh.index import open_dir
 from whoosh.qparser import QueryParser, OrGroup, AndGroup
 from whoosh.query import FuzzyTerm, Term, Or, And
-from extractor import search_in_text
+from search_text import search_in_text
 import os
 import time
 from extractor import extract_text_from_docx, extract_text_from_pdf

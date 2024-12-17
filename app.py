@@ -1,6 +1,6 @@
 from flask import Flask, request, jsonify, render_template
 from indexer import create_index
-from search import search_files
+from search_file import search_files
 from file_structure import build_file_structure
 from file_handler import open_file_location, open_file
 from whoosh.index import open_dir

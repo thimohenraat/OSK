@@ -26,113 +26,115 @@ export function renderResults(searchResults) {
     }
 
     searchResults.forEach(searchResult => {
-        const resultItem = document.createElement("div");
-        resultItem.classList.add("result-item");
-
-        // Create a header container for result metadata
-        const resultHeader = document.createElement("div");
-        resultHeader.classList.add("result-header");
-
-        // Bestand (File Name)
-        const fileNameElement = document.createElement("div");
-        fileNameElement.classList.add("result-header-item");
-        const fileNameLabel = document.createElement("span");
-        fileNameLabel.classList.add("result-header-label");
-        fileNameLabel.textContent = "Bestand:";
-        const fileNameValue = document.createElement("span");
-        fileNameValue.textContent = searchResult.filename;
-        fileNameValue.classList.add("result-header-clickable");
-        fileNameValue.addEventListener("click", () => {
-            openFileOrLocation(searchResult.path, "file");
-        });
-        fileNameElement.appendChild(fileNameLabel);
-        fileNameElement.appendChild(fileNameValue);
-        resultHeader.appendChild(fileNameElement);
-
-        // File Path
-        const pathElement = document.createElement("div");
-        pathElement.classList.add("result-header-item");
-        const pathLabel = document.createElement("span");
-        pathLabel.classList.add("result-header-label");
-        pathLabel.textContent = "Path:";
-        const pathValue = document.createElement("span");
-        pathValue.textContent = searchResult.path;
-        pathValue.classList.add("result-header-clickable");
-        pathValue.addEventListener("click", () => {
-            openFileOrLocation(searchResult.path, "location");
-        });
-        pathElement.appendChild(pathLabel);
-        pathElement.appendChild(pathValue);
-        resultHeader.appendChild(pathElement);
-
-        // Last Modified
-        const dateModifiedElement = document.createElement("div");
-        dateModifiedElement.classList.add("result-header-item");
-        const dateLabel = document.createElement("span");
-        dateLabel.classList.add("result-header-label");
-        dateLabel.textContent = "Laatst gewijzigd:";
-        const dateValue = document.createElement("span");
-        dateValue.textContent = searchResult.date_modified;
-        dateModifiedElement.appendChild(dateLabel);
-        dateModifiedElement.appendChild(dateValue);
-        resultHeader.appendChild(dateModifiedElement);
-
-        // Append header to result item
-        resultItem.appendChild(resultHeader);
-
-        // Container for match paragraphs
-        const matchesContainer = document.createElement("div");
-        matchesContainer.classList.add("matches-container");
-
-        // Slice matches to initial number
-        const initialMatches = searchResult.matches.slice(0, MAX_INITIAL_MATCHES);
-        const additionalMatches = searchResult.matches.slice(MAX_INITIAL_MATCHES);
-
-        // Render initial matches
-        initialMatches.forEach(match => {
-            const matchParagraph = document.createElement("p");
-            matchParagraph.classList.add("match-paragraph");
-            matchParagraph.innerHTML = highlightSearchTerm(match, document.getElementById("query").value);
-            matchesContainer.appendChild(matchParagraph);
-        });
-
-        // Add show more/less buttons if there are additional matches
-        if (additionalMatches.length > 0) {
-            const toggleMatchesButton = document.createElement("button");
-            toggleMatchesButton.classList.add("toggle-matches-btn");
-            toggleMatchesButton.textContent = SHOW_MORE_TEXT;
-
-            // Create a container for additional matches (initially hidden)
-            const additionalMatchesContainer = document.createElement("div");
-            additionalMatchesContainer.classList.add("additional-matches");
-            additionalMatchesContainer.style.display = 'none';
-
-            // Populate additional matches container
-            additionalMatches.forEach(match => {
-                const matchParagraph = document.createElement("p");
-                matchParagraph.classList.add("match-paragraph");
-                matchParagraph.innerHTML = highlightSearchTerm(match, document.getElementById("query").value);
-                additionalMatchesContainer.appendChild(matchParagraph);
-            });
-
-            toggleMatchesButton.addEventListener("click", () => {
-                if (toggleMatchesButton.textContent === SHOW_MORE_TEXT) {
-                    // Show additional matches
-                    matchesContainer.appendChild(additionalMatchesContainer);
-                    additionalMatchesContainer.style.display = 'block';
-                    toggleMatchesButton.textContent = SHOW_LESS_TEXT;
-                } else {
-                    // Hide additional matches
-                    additionalMatchesContainer.style.display = 'none';
-                    matchesContainer.removeChild(additionalMatchesContainer);
-                    toggleMatchesButton.textContent = SHOW_MORE_TEXT;
-                }
-            });
-
-            matchesContainer.appendChild(toggleMatchesButton);
-        }
-
-        resultItem.appendChild(matchesContainer);
+        const resultItem = createResultItem(searchResult);
         resultsDiv.appendChild(resultItem);
     });
+}
+
+function createResultItem(searchResult) {
+    const resultItem = document.createElement("div");
+    resultItem.classList.add("result-item");
+
+    const resultHeader = createResultHeader(searchResult);
+    resultItem.appendChild(resultHeader);
+
+    const matchesContainer = createMatchesContainer(searchResult.matches);
+    resultItem.appendChild(matchesContainer);
+
+    return resultItem;
+}
+
+function createResultHeader(searchResult) {
+    const resultHeader = document.createElement("div");
+    resultHeader.classList.add("result-header");
+
+    // Bestand
+    resultHeader.appendChild(
+        createHeaderItem("Bestand:", searchResult.filename, () =>
+            openFileOrLocation(searchResult.path, "file")
+        )
+    );
+
+    // Path
+    resultHeader.appendChild(
+        createHeaderItem("Path:", searchResult.path, () =>
+            openFileOrLocation(searchResult.path, "location")
+        )
+    );
+
+    // Laatst gewijzigd
+    resultHeader.appendChild(
+        createHeaderItem("Laatst gewijzigd:", searchResult.date_modified)
+    );
+
+    return resultHeader;
+}
+
+function createHeaderItem(labelText, valueText, onClick) {
+    const headerItem = document.createElement("div");
+    headerItem.classList.add("result-header-item");
+
+    const label = document.createElement("span");
+    label.classList.add("result-header-label");
+    label.textContent = labelText;
+
+    const value = document.createElement("span");
+    value.textContent = valueText;
+    if (onClick) {
+        value.classList.add("result-header-clickable");
+        value.addEventListener("click", onClick);
+    }
+
+    headerItem.appendChild(label);
+    headerItem.appendChild(value);
+
+    return headerItem;
+}
+
+function createMatchesContainer(matches) {
+    const matchesContainer = document.createElement("div");
+    matchesContainer.classList.add("matches-container");
+
+    const initialMatches = matches.slice(0, MAX_INITIAL_MATCHES);
+    const additionalMatches = matches.slice(MAX_INITIAL_MATCHES);
+
+    // Voeg de eerste matches toe
+    initialMatches.forEach(match => {
+        matchesContainer.appendChild(createMatchParagraph(match));
+    });
+
+    // Voeg "Toon meer" functionaliteit toe als er extra matches zijn
+    if (additionalMatches.length > 0) {
+        const toggleMatchesButton = document.createElement("button");
+        toggleMatchesButton.classList.add("toggle-matches-btn");
+        toggleMatchesButton.textContent = SHOW_MORE_TEXT;
+
+        const additionalMatchesContainer = document.createElement("div");
+        additionalMatchesContainer.classList.add("additional-matches");
+        additionalMatchesContainer.style.display = 'none';
+
+        additionalMatches.forEach(match => {
+            additionalMatchesContainer.appendChild(createMatchParagraph(match));
+        });
+
+        toggleMatchesButton.addEventListener("click", () => {
+            const isHidden = additionalMatchesContainer.style.display === 'none';
+            additionalMatchesContainer.style.display = isHidden ? 'block' : 'none';
+            toggleMatchesButton.textContent = isHidden
+                ? SHOW_LESS_TEXT
+                : SHOW_MORE_TEXT;
+        });
+
+        matchesContainer.appendChild(toggleMatchesButton);
+        matchesContainer.appendChild(additionalMatchesContainer);
+    }
+
+    return matchesContainer;
+}
+
+function createMatchParagraph(match) {
+    const matchParagraph = document.createElement("p");
+    matchParagraph.classList.add("match-paragraph");
+    matchParagraph.innerHTML = highlightSearchTerm(match, document.getElementById("query").value);
+    return matchParagraph;
 }
