@@ -133,8 +133,41 @@ function createMatchesContainer(matches) {
 }
 
 function createMatchParagraph(match) {
+    const container = document.createElement("div");
+    container.classList.add("match-container");
+
+    // Verkorte en volledige tekst instellen
+    const shortText = match.short;
+    const fullText = match.full;
+
+    // Paragraaf voor tekst
     const matchParagraph = document.createElement("p");
     matchParagraph.classList.add("match-paragraph");
-    matchParagraph.innerHTML = highlightSearchTerm(match, document.getElementById("query").value);
-    return matchParagraph;
+    matchParagraph.innerHTML = highlightSearchTerm(shortText, document.getElementById("query").value);
+
+    // Toon meer/Toon minder knop
+    const toggleButton = document.createElement("button");
+    toggleButton.textContent = "Toon meer";
+    toggleButton.classList.add("toggle-match-btn");
+
+    // Event listener voor de knop
+    toggleButton.addEventListener("click", () => {
+        const isExpanded = toggleButton.textContent === "Toon minder";
+
+        if (isExpanded) {
+            // Terug naar verkorte weergave
+            matchParagraph.innerHTML = highlightSearchTerm(shortText, document.getElementById("query").value);
+            toggleButton.textContent = "Toon meer";
+        } else {
+            // Toon volledige weergave
+            matchParagraph.innerHTML = highlightSearchTerm(fullText, document.getElementById("query").value);
+            toggleButton.textContent = "Toon minder";
+        }
+    });
+
+    // Voeg paragraaf en knop toe aan de container
+    container.appendChild(matchParagraph);
+    container.appendChild(toggleButton);
+
+    return container;
 }
