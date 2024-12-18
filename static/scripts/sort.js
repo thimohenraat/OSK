@@ -18,3 +18,7 @@ export function sortByDate(results = getCurrentResults()) {
     setCurrentResults(results);
     return results;
 }
+
+export function sortByRelevance(results) {
+    return results.sort((a, b) => b.matches.length - a.matches.length);
+}

@@ -1,25 +1,34 @@
 import { handleSearchFormSubmit } from './search.js';
-import { sortByDate } from './sort.js';
+import { sortByDate, sortByRelevance } from './sort.js';
 import { renderResults } from './render.js';
 import { getCurrentResults, setCurrentResults } from './state.js';
 import { handleIndexingFormSubmit, checkIndexStatus } from './index.js';
 import { renderFileTree } from './fileTree.js';
 
 document.addEventListener('DOMContentLoaded', () => {
+    // Handle zoekformulier
     document.getElementById("search-form").addEventListener("submit", (e) => {
         handleSearchFormSubmit(e, (results, fileStructure) => {
-            setCurrentResults(results);
-            renderResults(results);
+            setCurrentResults(results); // Sla resultaten op
+            renderResults(results); // Render zoekresultaten
 
             const matchingFiles = results.map(result => result.path);
-
-            renderFileTree(fileStructure, matchingFiles);  // Geef ook matchingFiles door
+            renderFileTree(fileStructure, matchingFiles); // Toon alleen bestanden met resultaten
         });
     });
 
-    document.getElementById("sort-button").addEventListener("click", () => {
-        const sortedResults = sortByDate(getCurrentResults());
-        renderResults(sortedResults);
+    // Sorteeropties
+    document.getElementById("sort-select").addEventListener("change", () => {
+        const sortOption = document.getElementById("sort-select").value;
+        let sortedResults = [...getCurrentResults()]; // Haal huidige resultaten op
+
+        if (sortOption === "date") {
+            sortedResults = sortByDate(sortedResults);
+        } else if (sortOption === "relevance") {
+            sortedResults = sortByRelevance(sortedResults);
+        }
+
+        renderResults(sortedResults); // Render gesorteerde resultaten
     });
 
     // Indexeerfunctionaliteit
@@ -29,6 +38,6 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 
-    // Roep de functie aan om de indexstatus te controleren
+    // Controleer indexstatus
     checkIndexStatus();
 });

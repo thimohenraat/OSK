@@ -56,3 +56,4 @@ def search_in_text(content, query, is_pdf=False, search_type="exact"):
         process_sentences(sentences)
 
     return matches
+

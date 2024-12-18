@@ -7,15 +7,31 @@ const SHOW_LESS_TEXT = 'Toon minder resultaten';
 
 export function renderResults(searchResults) {
     const resultsDiv = document.getElementById("results");
-    const sortButton = document.getElementById("sort-button");
+    const sortSelect = document.getElementById("sort-select");
 
     if (!resultsDiv) {
         console.error("Element with id 'results' not found");
         return;
     }
-    if (!sortButton) {
-        console.error("Element with id 'sort-button' not found");
+    if (!sortSelect) {
+        console.error("Element with id 'sort-select' not found");
         return;
+    }
+
+    // Voeg relevantiescore toe aan elk zoekresultaat
+    searchResults.forEach(result => {
+        result.relevance_score = result.matches.length; // Aantal matches als relevantiescore
+    });
+
+    // Sorteerresultaten op basis van selectie
+    const sortOption = sortSelect.value;
+
+    if (sortOption === "date") {
+        // Sorteer op datum
+        searchResults.sort((a, b) => new Date(b.date_modified) - new Date(a.date_modified));
+    } else if (sortOption === "relevance") {
+        // Sorteer op relevantie
+        searchResults.sort((a, b) => b.relevance_score - a.relevance_score);
     }
 
     resultsDiv.innerHTML = "";
