@@ -12,8 +12,8 @@ document.addEventListener('DOMContentLoaded', () => {
             setCurrentResults(results); // Sla resultaten op
             renderResults(results); // Render zoekresultaten
 
-            const matchingFiles = results.map(result => result.path);
-            renderFileTree(fileStructure, matchingFiles); // Toon alleen bestanden met resultaten
+            // const matchingFiles = results.map(result => result.path);
+            // renderFileTree(fileStructure, matchingFiles); // Toon alleen bestanden met resultaten
         });
     });
 
