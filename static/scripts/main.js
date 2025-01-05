@@ -2,7 +2,7 @@ import { handleSearchFormSubmit } from './search.js';
 import { sortByDate, sortByRelevance } from './sort.js';
 import { renderResults } from './render.js';
 import { getCurrentResults, setCurrentResults } from './state.js';
-import { handleIndexingFormSubmit, checkIndexStatus } from './index.js';
+import { handleIndexingFormSubmit, checkIndexStatus  } from './index.js';
 import { renderFileTree } from './fileTree.js';
 
 document.addEventListener('DOMContentLoaded', () => {

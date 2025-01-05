@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html>
+<html lang="nl">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -12,33 +12,47 @@
 
 <body>
 
-    <header class="header">    
-        <img src="{{ url_for('static', filename='images/logo.png') }}" alt="rijkswaterstaat logo">
+    <header class="header">
+        <img src="{{ url_for('static', filename='images/logo.png') }}" alt="Rijkswaterstaat Logo">
     </header>
 
     <main class="container">
 
-        <nav>
+        <nav class="nav">
 
             <section class="index-section">
                 <summary>Indexeer en doorzoek een map</summary>
-
-                <form id="index-form" class="index-form">
-                    <input id="index-location" type="text" class="index-location" name="location" placeholder="Voer een maplocatie in" required>
-                    <button id="index-button" type="submit" class="index-button">Indexeer</button>
-                    <p id="index-status" class="index-status"></p> 
+                <form id="index-form" class="index-form" aria-label="Indexeer Map Formulier">
+                    <input 
+                        id="index-location" 
+                        type="text" 
+                        class="index-location" 
+                        name="location" 
+                        placeholder="Voer een maplocatie in" 
+                        aria-label="Maplocatie invoeren" 
+                        required>
+                    <button 
+                        id="index-button" 
+                        type="submit" 
+                        class="index-button" 
+                        aria-label="Start Indexeren">
+                        Indexeer
+                    </button>
+                    <p id="index-status" class="index-status" aria-live="polite"></p>
                 </form>
-
             </section>
 
             <section class="search-section">
-
                 <summary>Zoek in map en bestand</summary>
-
-                <form id="search-form" class="search-form">
+                <form id="search-form" class="search-form" aria-label="Zoek Formulier">
                     <div class="form-group">
-                        <input type="text" id="query" name="query" placeholder="Zoekterm..." required>
-
+                        <input 
+                            type="text" 
+                            id="query" 
+                            name="query" 
+                            placeholder="Zoekterm..." 
+                            aria-label="Zoekterm invoeren" 
+                            required>
                         <div class="search-type">
                             <label>
                                 <input type="radio" name="search_type" value="exact" checked> Exacte tekst
@@ -50,11 +64,9 @@
                                 <input type="radio" name="search_type" value="any_term"> Minstens 1 term
                             </label>
                         </div>
-
                     </div>
-                    <button type="submit" class="search-button">Zoeken</button>
+                    <button type="submit" class="search-button" aria-label="Start Zoeken">Zoeken</button>
                 </form>
-
             </section>
 
         </nav>
@@ -77,10 +89,12 @@
                     </label>
                 </div>
             </details>
-            <select id="sort-select">
+
+            <select id="sort-select" class="sort-select" aria-label="Sorteer op">
                 <option value="relevance">Sorteren op relevantie</option>
                 <option value="date">Sorteren op datum</option>
             </select>
+
         </section>
 
         <div id="results" class="results-section">
