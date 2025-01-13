@@ -56,7 +56,7 @@ export function checkIndexStatus() {
                 .then(data => {
                     if (data.indexed) {
                         indexButton.disabled = true;
-                        statusElement.textContent = `Map ${location} is al geïndexeerd.`;
+                        statusElement.textContent = `De map is geïndexeerd.`;
 
                         // Maak het formulier klein en schakel interactie uit
                         nav.classList.add('index-form-small');
@@ -72,7 +72,7 @@ export function checkIndexStatus() {
                         }
                     } else {
                         indexButton.disabled = false;
-                        statusElement.textContent = `Map ${location} is nog niet geïndexeerd.`;
+                        statusElement.textContent = `De map is nog niet geïndexeerd.`;
 
                         // Herstel de interactie en verwijder de reset-knop
                         nav.classList.remove('index-form-small');
