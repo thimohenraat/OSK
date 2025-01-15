@@ -9,7 +9,7 @@ export function handleIndexingFormSubmit(event, callback) {
         return;
     }
 
-    fetch("/index", {
+    return fetch("/index", {
         method: "POST",
         headers: {
             "Content-Type": "application/x-www-form-urlencoded",
@@ -19,13 +19,16 @@ export function handleIndexingFormSubmit(event, callback) {
         .then(response => response.json())
         .then(data => {
             if (data.success) {
-                alert(data.message || "Indexering voltooid.");
                 if (callback) callback(data);
+                return data;
             } else {
-                alert(`Fout bij indexering: ${data.error || "Onbekende fout"}`);
+                throw new Error(data.error || "Onbekende fout");
             }
         })
-        .catch(error => alert("Er is een fout opgetreden bij het indexeren."));
+        .catch(error => {
+            console.error("Indexering fout:", error);
+            throw error;
+        });
 }
 
 export function checkIndexStatus() {
@@ -34,82 +37,116 @@ export function checkIndexStatus() {
     const indexSection = document.querySelector('.index-section');
     const statusElement = document.getElementById('index-status');
     const nav = document.querySelector('.nav');
+    const resultsDiv = document.getElementById('results');
+    const queryInput = document.getElementById('query');
 
-    // Maak reset-knop dynamisch
     let resetButton = null;
+    let isProcessing = false;
 
-    locationInput.addEventListener('input', function () {
-        const location = this.value;
+    indexButton.addEventListener('click', async function(e) {
+        e.preventDefault();
+        
+        if (isProcessing) return;
+        
+        const location = locationInput.value;
 
-        if (location) {
-            fetch('/check-index', {
+        if (!location) {
+            resetUI();
+            return;
+        }
+
+        try {
+            isProcessing = true;
+            indexButton.disabled = true;
+            
+            // First check if it's already indexed
+            const checkResponse = await fetch('/check-index', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ location })
-            })
-                .then(response => {
-                    if (!response.ok) {
-                        throw new Error(`Server Error: ${response.status}`);
-                    }
-                    return response.json();
-                })
-                .then(data => {
-                    if (data.indexed) {
-                        indexButton.disabled = true;
-                        statusElement.textContent = `De map is geïndexeerd.`;
+            });
 
-                        // Maak het formulier klein en schakel interactie uit
-                        nav.classList.add('index-form-small');
-                        locationInput.disabled = true;
-
-                        // Voeg reset-knop toe als deze nog niet bestaat
-                        if (!resetButton) {
-                            resetButton = document.createElement('button');
-                            resetButton.textContent = 'Reset';
-                            resetButton.className = 'reset-button';
-                            resetButton.addEventListener('click', resetForm);
-                            indexSection.appendChild(resetButton);
-                        }
-                    } else {
-                        indexButton.disabled = false;
-                        statusElement.textContent = `De map is nog niet geïndexeerd.`;
-
-                        // Herstel de interactie en verwijder de reset-knop
-                        nav.classList.remove('index-form-small');
-                        locationInput.disabled = false;
-                        if (resetButton) {
-                            resetButton.remove();
-                            resetButton = null;
-                        }
-                    }
-                })
-                .catch(error => {
-                    console.error("Fout bij het controleren van de indexeerstatus:", error);
-                    statusElement.textContent = "Fout bij het controleren van de indexstatus.";
-                });
-        } else {
-            // Reset status en formulierpositie als het invoerveld leeg is
-            indexButton.disabled = false;
-            statusElement.textContent = '';
-            nav.classList.remove('index-form-small');
-            locationInput.disabled = false;
-            if (resetButton) {
-                resetButton.remove();
-                resetButton = null;
+            if (!checkResponse.ok) {
+                throw new Error(`Server Error: ${checkResponse.status}`);
             }
+
+            const checkData = await checkResponse.json();
+
+            if (checkData.indexed) {
+                updateUIForIndexed(location);
+            } else {
+                // Start indexing process
+                statusElement.textContent = "De map wordt nu geïndexeerd...";
+                locationInput.disabled = true;
+                
+                try {
+                    await handleIndexingFormSubmit({ 
+                        preventDefault: () => {}, 
+                        target: indexButton.closest("form") 
+                    });
+                    
+                    updateUIForIndexed(location);
+                } catch (indexError) {
+                    statusElement.textContent = `Fout bij indexering: ${indexError.message}`;
+                    completeReset();
+                }
+            }
+        } catch (error) {
+            console.error("Error:", error);
+            statusElement.textContent = "Er is een fout opgetreden.";
+            completeReset();
+        } finally {
+            isProcessing = false;
         }
     });
 
-    // Reset-functionaliteit
-    function resetForm() {
-        locationInput.value = '';
-        locationInput.disabled = false;
-        nav.classList.remove('index-form-small');
+    function completeReset() {
+        isProcessing = false;
         indexButton.disabled = false;
-        statusElement.textContent = '';
+        locationInput.disabled = false;
+        nav.classList.remove("index-form-small");
         if (resetButton) {
             resetButton.remove();
             resetButton = null;
+        }
+    }
+
+    function resetUI() {
+        completeReset();
+        locationInput.value = "";
+        statusElement.textContent = "";
+
+        // Reset zoekresultaten
+        if (resultsDiv) {
+            resultsDiv.innerHTML = "";
+        }
+
+        // Reset zoekveld
+        if (queryInput) {
+            queryInput.value = "";
+        }
+
+        // Reset state
+        import('./state.js').then(state => {
+            state.setCurrentResults([]);
+            state.setSortDirection('desc');
+        });
+    }
+
+    function updateUIForIndexed(location) {
+        // Ensure location input retains its value
+        locationInput.value = location;
+        locationInput.disabled = true;
+        indexButton.disabled = true;
+        statusElement.textContent = `De map is geïndexeerd.`;
+        nav.classList.add("index-form-small");
+
+        if (!resetButton) {
+            resetButton = document.createElement("button");
+            resetButton.textContent = "Reset";
+            resetButton.className = "reset-button";
+            resetButton.addEventListener("click", resetUI);
+            indexSection.appendChild(resetButton);
         }
     }
 }

@@ -1,12 +1,13 @@
 # -*- mode: python ; coding: utf-8 -*-
 
+block_cipher = None
 
 a = Analysis(
     ['app.py'],
     pathex=[],
     binaries=[],
     datas=[('templates', 'templates'), ('static', 'static')],
-    hiddenimports=[],
+    hiddenimports=['indexer', 'search_file', 'file_structure', 'search_text', 'file_handler', 'extractor'],
     hookspath=[],
     hooksconfig={},
     runtime_hooks=[],
@@ -14,7 +15,8 @@ a = Analysis(
     noarchive=False,
     optimize=0,
 )
-pyz = PYZ(a.pure)
+
+pyz = PYZ(a.pure, a.zipped_data, cipher=block_cipher)
 
 exe = EXE(
     pyz,
@@ -22,7 +24,7 @@ exe = EXE(
     a.binaries,
     a.datas,
     [],
-    name='app',
+    name='zoekApp2',
     debug=False,
     bootloader_ignore_signals=False,
     strip=False,
@@ -35,4 +37,5 @@ exe = EXE(
     target_arch=None,
     codesign_identity=None,
     entitlements_file=None,
+    icon=['icon.ico'],
 )
