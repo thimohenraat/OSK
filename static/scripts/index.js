@@ -138,12 +138,12 @@ export function checkIndexStatus() {
         locationInput.value = location;
         locationInput.disabled = true;
         indexButton.disabled = true;
-        statusElement.textContent = `De map is geïndexeerd.`;
+        // statusElement.textContent = `De map is geïndexeerd.`;
         nav.classList.add("index-form-small");
 
         if (!resetButton) {
             resetButton = document.createElement("button");
-            resetButton.textContent = "Reset";
+            resetButton.textContent = "Nieuwe map";
             resetButton.className = "reset-button";
             resetButton.addEventListener("click", resetUI);
             indexSection.appendChild(resetButton);

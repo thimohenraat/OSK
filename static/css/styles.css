@@ -1,11 +1,29 @@
 /* Global Variables */
 :root {
-  --primary-color: #F9E11E;
-  --primary-hover: #e0c020;
-  --secondary-color: #e6edf8;
-  --accent-color: #01689b;
+  /* Primary Colors */
+  --rws-yellow: #F9E11E;     /* Rijkswaterstaat signature yellow for header */
+  --rws-blue: #154273;       /* Rijkswaterstaat dark blue */
+  
+  /* Color System */
+  --primary-color: #154273;  /* Main blue for primary actions */
+  --primary-hover: #1d5590;  /* Lighter blue for hover states */
+  
+  /* Secondary Blues (from lightest to darkest) */
+  --accent-lightest: #DDEFF8; /* Very light blue for backgrounds */
+  --accent-light: #ABD7ED;    /* Light blue for secondary elements */
+  --accent-medium: #66AFDD;   /* Medium blue for interactive elements */
+  --accent-dark: #154273;     /* Dark blue for text and headers */
+  
+  /* UI Colors */
   --text-color: #333;
-  --light-text-color: #666;
+  --text-light: #666;
+  --text-white: #fff;
+  
+  /* Background Colors */
+  --bg-white: #fff;
+  --bg-light: #f8f9fa;
+  
+  /* Other Variables */
   --font-family: "Plus Jakarta Sans", sans-serif;
   --border-radius: 8px;
   --box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
@@ -29,7 +47,7 @@ html {
 
 body {
   font-family: var(--font-family), Arial, sans-serif;
-  background-color: #f8f9fa;
+  background-color: var(--bg-light);
   color: var(--text-color);
   line-height: 1.6;
   margin: 0;
@@ -38,13 +56,14 @@ body {
 
 /* Header */
 .header {
-  background-color: var(--primary-color);
+  background-color: var(--rws-yellow);
   display: flex;
   height: 80px;
   justify-content: center;
   align-items: center;
   width: 100%;
 }
+
 .header img {
   max-height: 100%;
   object-fit: contain;
@@ -82,7 +101,6 @@ nav {
   width: 80%;
   max-width: 800px;
   text-align: center;
-  /* transition: all 0.5s ease; */
   z-index: 10;
 }
 
@@ -98,40 +116,85 @@ nav {
   width: 100%;
   max-width: none;
   margin: 0;
+  background-color: var(--accent-lightest);
 }
+
 /* Fix display issues */
 .index-form-small .search-section {
   display: flex !important;
   flex-direction: column;
   width: 100%;
 }
+
 .index-form-small ~ .sort-section {
   display: flex !important;
 }
+
 .index-form-small .index-section {
   transform: scale(0.8, 0.8);
 }
+
 /* Search and Index Sections */
 .index-section, .search-section {
-  background-color: var(--secondary-color);
+  background-color: var(--accent-light);
   border-radius: var(--border-radius);
-  padding: 20px;
+  padding: 0 0 20px 0;
   box-shadow: var(--box-shadow);
   margin-bottom: 20px;
 }
 
-.index-section summary, .search-section summary {
+.section-summary {
+  border-radius: var(--border-radius) var(--border-radius) 0 0;
+  text-align: left;
+  background-color: var(--primary-color);
+  color: var(--text-white);
+  font-weight: 600;
+  cursor: pointer;
+  position: relative;
+  margin-bottom: 15px;
+  border-bottom: 2px solid var(--accent-light);
+  transition: all var(--transition-speed) ease;
+  padding: 10px 10px 10px 40px;
+}
+
+.section-summary:hover {
+  background-color: var(--primary-hover);
+  border-bottom-color: var(--accent-lightest);
+}
+
+/* Pijltje voor de summary */
+.section-summary::before {
+  content: "▶";
+  position: absolute;
+  top: 13px;
+  left: 15px;
+  transform: rotate(0);
+  transition: transform var(--transition-speed) ease;
+  font-size: 0.8em;
+}
+
+/* Roteer het pijltje wanneer details open is */
+details[open] .section-summary::before {
+  transform: rotate(90deg);
+}
+
+/* Verschillende groottes voor verschillende secties */
+.index-section .section-summary,
+.search-section .section-summary {
   font-size: 1.2rem;
-  color: var(--accent-color);
-  font-weight: bold;
+}
+
+.sort-section .section-summary {
+  font-size: 1.1rem;
 }
 
 /* Form Inputs and Buttons */
-.index-button{
+.index-button {
   width: auto;
   padding: 10px;
   font-size: 1rem;
 }
+
 .index-form input, .search-form input {
   padding: 10px;
   font-size: 1rem;
@@ -140,16 +203,20 @@ nav {
   border-radius: var(--border-radius);
   margin-bottom: 10px;
 }
+
 .index-form button, .search-form button {
-  background-color: var(--primary-color);
+  background-color: var(--accent-medium);
+  color: var(--text-white);
   border: none;
   border-radius: var(--border-radius);
   cursor: pointer;
   transition: background-color var(--transition-speed);
 }
+
 .index-form button:hover, .search-form button:hover {
-  background-color: var(--primary-hover);
+  background-color: var(--primary-color);
 }
+
 .index-form button:disabled {
   cursor: not-allowed;
   background-color: #ddd;
@@ -160,39 +227,39 @@ nav {
   display: flex;
   flex-direction: column;
 }
+
 .search-form p {
   font-size: 1.2rem;
-  color: var (--accent-color);
+  color: var(--primary-color);
   font-weight: bold;
   margin-bottom: 5px;
 }
+
 .search-form button {
   padding: 10px 15px;
   align-self: baseline;
 }
+
 .search-type {
   display: flex;
   flex-direction: row;
   align-items: center;
-  gap: 20px; /* Ruimte tussen labels */
+  gap: 20px;
 }
+
 .search-type label {
   display: flex;
   align-items: center;
-  gap: 5px; /* Ruimte tussen labeltekst en input */
+  gap: 5px;
 }
+
 /* Sort Section */
 .sort-section {
-  /* display: flex; */
   flex-direction: row;
   gap: 4rem;
   margin-top: 20px;
 }
-.sort-section.details summary {
-  font-weight: bold;
-  cursor: pointer;
-  color: var(--accent-color);
-}
+
 .sort-section.details .file-types {
   margin-top: 10px;
   display: flex;
@@ -202,7 +269,7 @@ nav {
 
 /* File Types */
 .file-types {
-  background-color: #ffffff;
+  background-color: var(--bg-white);
   padding: 20px;
   border-radius: var(--border-radius);
   box-shadow: var(--box-shadow);
@@ -210,6 +277,7 @@ nav {
   flex-wrap: wrap;
   gap: 10px;
 }
+
 .file-types label {
   font-size: 0.9rem;
 }
@@ -226,31 +294,32 @@ nav {
   margin-top: 20px;
   display: block;
 }
+
 .results {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
   gap: 20px;
 }
+
 .result-item {
-  background-color: #fafafa;
+  background-color: var(--bg-light);
   padding: 15px; 
   border-top: 1px solid #ccc;
 }
-/* .result-item:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 6px 10px rgba(0, 0, 0, 0.2);
-} */
+
 .result-title {
   font-size: 1.2rem;
   font-weight: bold;
-  color: var(--accent-color);
+  color: var(--primary-color);
   margin-bottom: 10px;
 }
+
 .result-path {
   font-size: 0.9rem;
-  color: var(--light-text-color);
+  color: var(--text-light);
   margin-bottom: 10px;
 }
+
 .result-snippet {
   font-size: 1rem;
   line-height: 1.6;
@@ -263,18 +332,21 @@ nav {
   flex-direction: column;
   gap: 10px;
 }
+
 .toggle-matches-btn {
   align-self: flex-start;
   padding: 8px 12px;
-  background-color: var(--primary-color);
+  background-color: var(--accent-medium);
+  color: var(--text-white);
   border: none;
   border-radius: var(--border-radius);
   cursor: pointer;
   font-size: 0.9rem;
   transition: background-color var(--transition-speed);
 }
+
 .toggle-matches-btn:hover {
-  background-color: var(--primary-hover);
+  background-color: var(--primary-color);
 }
 
 /* Result Header Styles */
@@ -284,45 +356,50 @@ nav {
   gap: 10px;
   margin-bottom: 20px;
 }
+
 .result-header-item {
   display: flex;
   flex-direction: column;
 }
+
 .result-header-label {
   font-weight: lighter;
-  color: lightslategray;
+  color: var(--text-light);
   margin-right: 10px;
   min-width: 120px;
 }
+
 .result-header-clickable {
   font-weight: bold;
   cursor: pointer;
-  color: var(--accent-color);
+  color: var(--primary-color);
   transition: color var(--transition-speed);
 }
+
 .result-header-clickable:hover {
-  color: #0056b3;
-  text-decoration: underline;
+  color: var(--primary-hover);
 }
 
 /* Match Paragraph */
 .match-paragraph {
   margin: 5px 0;
 }
+
 .additional-matches {
   display: flex;
   flex-direction: column;
   gap: 10px;
 }
+
 .highlight {
-  background-color: var(--primary-color);
+  background-color: var(--accent-light);
 }
 
 /* Maak het invoerveld niet interactief als de index-form-small actief is */
 .nav.index-form-small input#index-location {
   pointer-events: none;
-  background-color: #f1f1f1; /* Grijs uit om duidelijk te maken dat het veld niet bewerkbaar is */
-  color: #999; /* Aanpassen van tekstkleur */
+  background-color: #f1f1f1;
+  color: var(--text-light);
 }
 
 /* Knop voor resetten */
@@ -336,19 +413,19 @@ nav {
   font-size: 1rem;
   font-weight: 500;
   cursor: pointer;
-  background-color: var(--yellow);
-  color: #000;
+  background-color: var(--accent-medium);
+  color: var(--text-white);
   margin-top: 20px;
   transition: all 0.3s ease;
 }
 
 .reset-button:hover {
-  background-color: var(--yellow-hover);
+  background-color: var(--primary-color);
 }
 
 /* Accessibility Improvements */
 button:focus, input:focus {
-  outline: 2px solid var(--accent-color);
+  outline: 2px solid var(--accent-medium);
   outline-offset: 2px;
 }
 

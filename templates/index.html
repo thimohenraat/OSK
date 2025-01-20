@@ -29,14 +29,14 @@
         <nav class="nav">
 
             <section class="index-section">
-                <summary>Indexeer en doorzoek een map</summary>
+                <summary class="section-summary">1. Selecteer map</summary>
                 <form id="index-form" class="index-form" aria-label="Indexeer Map Formulier">
                     <input 
                         id="index-location" 
                         type="text" 
                         class="index-location" 
                         name="location" 
-                        placeholder="Voer een maplocatie in" 
+                        placeholder="Bijvoordbeeld: 'G:\zd\OSK\Ontwerpnota's'" 
                         aria-label="Maplocatie invoeren" 
                         required>
                     <button 
@@ -44,21 +44,21 @@
                         type="submit" 
                         class="index-button" 
                         aria-label="Start Indexeren">
-                        Doorzoek
+                        Map selecteren
                     </button>
                     <p id="index-status" class="index-status" aria-live="polite"></p>
                 </form>
             </section>
 
             <section class="search-section">
-                <summary>Zoek in map en bestand</summary>
+                <summary class="section-summary">2. Bestanden doorzoeken</summary>
                 <form id="search-form" class="search-form" aria-label="Zoek Formulier">
                     <div class="form-group">
                         <input 
                             type="text" 
                             id="query" 
                             name="query" 
-                            placeholder="Zoekterm..." 
+                            placeholder="Bijvoordbeeld: 'Generator'" 
                             aria-label="Zoekterm invoeren" 
                             required>
                         <div class="search-type">
