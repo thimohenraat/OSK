@@ -115,38 +115,29 @@ export function checkIndexStatus() {
         completeReset();
         locationInput.value = "";
         statusElement.textContent = "";
-
-        // Reset zoekresultaten
+        document.getElementById('reset-button').style.display = 'none';
+    
         if (resultsDiv) {
             resultsDiv.innerHTML = "";
         }
-
-        // Reset zoekveld
+    
         if (queryInput) {
             queryInput.value = "";
         }
-
-        // Reset state
+    
         import('./state.js').then(state => {
             state.setCurrentResults([]);
             state.setSortDirection('desc');
         });
     }
-
     function updateUIForIndexed(location) {
-        // Ensure location input retains its value
         locationInput.value = location;
         locationInput.disabled = true;
         indexButton.disabled = true;
-        // statusElement.textContent = `De map is geïndexeerd.`;
         nav.classList.add("index-form-small");
-
-        if (!resetButton) {
-            resetButton = document.createElement("button");
-            resetButton.textContent = "Nieuwe map";
-            resetButton.className = "reset-button";
-            resetButton.addEventListener("click", resetUI);
-            indexSection.appendChild(resetButton);
-        }
+        document.getElementById('reset-button').style.display = 'inline-flex';
     }
+
+    // Voeg de event listener toe voor de reset button
+    document.getElementById('reset-button').addEventListener('click', resetUI);
 }

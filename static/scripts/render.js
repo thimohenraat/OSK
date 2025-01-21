@@ -163,7 +163,7 @@ function createMatchParagraph(match) {
 
     // Toon meer/Toon minder knop
     const toggleButton = document.createElement("button");
-    toggleButton.textContent = "Toon meer";
+    toggleButton.textContent = "Toon meer context";
     toggleButton.classList.add("toggle-match-btn");
 
     // Event listener voor de knop
@@ -173,7 +173,7 @@ function createMatchParagraph(match) {
         if (isExpanded) {
             // Terug naar verkorte weergave
             matchParagraph.innerHTML = highlightSearchTerm(shortText, document.getElementById("query").value);
-            toggleButton.textContent = "Toon meer";
+            toggleButton.textContent = "Toon meer context";
         } else {
             // Toon volledige weergave
             matchParagraph.innerHTML = highlightSearchTerm(fullText, document.getElementById("query").value);

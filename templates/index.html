@@ -31,7 +31,8 @@
             <section class="index-section">
                 <summary class="section-summary">1. Selecteer map</summary>
                 <form id="index-form" class="index-form" aria-label="Indexeer Map Formulier">
-                    <input 
+                    <div class="search-input-wrapper">                
+                        <input 
                         id="index-location" 
                         type="text" 
                         class="index-location" 
@@ -39,13 +40,26 @@
                         placeholder="Bijvoordbeeld: 'G:\zd\OSK\Ontwerpnota's'" 
                         aria-label="Maplocatie invoeren" 
                         required>
-                    <button 
-                        id="index-button" 
-                        type="submit" 
-                        class="index-button" 
-                        aria-label="Start Indexeren">
-                        Map selecteren
-                    </button>
+                        <img src="{{ url_for('static', filename='images/search.png') }}" alt="Zoek" class="search-icon">
+                    </div>
+
+                        <div class="button-group">
+                            <button 
+                                id="index-button" 
+                                type="submit" 
+                                class="index-button" 
+                                aria-label="Start Indexeren">
+                                Map selecteren
+                            </button>
+                            <button 
+                                id="reset-button" 
+                                type="button" 
+                                class="reset-button" 
+                                aria-label="Reset Indexering"
+                                style="display: none;">
+                                Nieuwe map
+                            </button>
+                        </div>
                     <p id="index-status" class="index-status" aria-live="polite"></p>
                 </form>
             </section>
@@ -54,13 +68,20 @@
                 <summary class="section-summary">2. Bestanden doorzoeken</summary>
                 <form id="search-form" class="search-form" aria-label="Zoek Formulier">
                     <div class="form-group">
-                        <input 
-                            type="text" 
-                            id="query" 
-                            name="query" 
-                            placeholder="Bijvoordbeeld: 'Generator'" 
-                            aria-label="Zoekterm invoeren" 
-                            required>
+                        <div class="search-input">
+                            <div class="search-input-wrapper">     
+                                <input 
+                                type="text" 
+                                id="query" 
+                                name="query" 
+                                placeholder="Bijvoordbeeld: 'Generator'" 
+                                aria-label="Zoekterm invoeren" 
+                                required>
+                                <img src="{{ url_for('static', filename='images/search.png') }}" alt="Zoek" class="search-icon">
+                            </div>
+                            <button type="submit" class="search-button" aria-label="Start Zoeken">Zoeken</button>
+                        </div>
+
                         <div class="search-type">
                             <label>
                                 <input type="radio" name="search_type" value="exact" checked> Exacte tekst
@@ -73,14 +94,13 @@
                             </label>
                         </div>
                     </div>
-                    <button type="submit" class="search-button" aria-label="Start Zoeken">Zoeken</button>
                 </form>
             </section>
 
         </nav>
 
         <section class="sort-section">
-            <details>
+            <details class="file-types-section">
                 <summary>Kies bestandstypen</summary>
                 <div class="file-types">
                     <label>
